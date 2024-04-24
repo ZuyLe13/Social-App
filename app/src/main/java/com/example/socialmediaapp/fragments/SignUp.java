@@ -12,10 +12,6 @@ import com.example.socialmediaapp.R;
 
 public class SignUp extends Fragment {
 
-    public SignUp() {
-        // Required empty public constructor
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
