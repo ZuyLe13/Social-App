@@ -30,8 +30,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_main);
 
-        setContentView(R.layout.fragment_sign_in);
-
+//        setContentView(R.layout.fragment_sign_in);
+//        setContentView(R.layout.fragment_user_profile);
+        setContentView(R.layout.fragment_others_user_profile);
+//        setContentView(R.layout.fragment_search_page);
 
 //        bottomNavView = findViewById(R.id.bottomNavView);
 //
