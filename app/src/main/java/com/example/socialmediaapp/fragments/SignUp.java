@@ -150,6 +150,10 @@ public class SignUp extends Fragment {
                                                         uploadUser(user,phone,name,email);
                                                         Toast.makeText(getContext(),"Sign up successful", Toast.LENGTH_SHORT).show();
                                                     }
+                                                    else{
+                                                        Toast.makeText(getContext(),"Can not send email verification link", Toast.LENGTH_SHORT).show();
+
+                                                    }
                                                 }
                                             });
 
