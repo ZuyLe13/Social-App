@@ -2,21 +2,13 @@ package com.example.socialmediaapp;
 
 import android.os.Bundle;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
-import android.widget.FrameLayout;
-import android.view.MenuItem;
-import androidx.annotation.NonNull;
+
+import com.example.socialmediaapp.fragments.SignIn;
+import com.example.socialmediaapp.fragments.SignUp;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.example.socialmediaapp.fragments.Home;
-import com.example.socialmediaapp.fragments.Search;
-import com.example.socialmediaapp.fragments.Notification;
-import com.example.socialmediaapp.fragments.Profile;
-import androidx.fragment.app.Fragment;
+
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -28,8 +20,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_main);
-        setContentView(R.layout.fragment_sign_in);
+        setContentView(R.layout.fragment_sign_up);
+
+        loadFragment(new SignUp(), true); // Thêm SignUp Fragment vào activity
 
 
 //        bottomNavView = findViewById(R.id.bottomNavView);
