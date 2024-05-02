@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/home"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,79 +9,40 @@
     tools:context=".fragments.Home">
 
     <LinearLayout
-        android:id="@+id/layoutTop"
+        android:id="@+id/listBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginTop="6dp"
+        android:orientation="horizontal"
+        android:layout_marginTop="62dp"
+        android:paddingBottom="10dp"
         android:background="#fff">
 
-        <LinearLayout
-            android:id="@+id/layoutHead"
-            android:layout_width="match_parent"
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/popularBtn"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_weight="1"
+            android:layout_marginRight="10dp"
+            android:text="Popular"
+            style="@style/focusBtn"/>
 
-            <EditText
-                android:id="@+id/searchET"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginEnd="18dp"
-
-                android:hint="Search"
-                style="@style/inputET"
-                android:drawablePadding="10dp"
-                android:drawableStart="@drawable/ic_search"/>
-
-            <ImageButton
-                android:id="@+id/messageBtn"
-                android:layout_width="54dp"
-                android:layout_height="match_parent"
-                android:src="@drawable/ic_send"
-                android:background="@drawable/input"
-                android:contentDescription="Message" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/listBtn"
-            android:layout_width="match_parent"
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/trendBtn"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="14dp"
-            android:paddingBottom="10dp"
-            android:layout_below="@+id/layoutHead"
-            android:background="#fff">
+            android:layout_weight="1"
+            android:layout_marginRight="10dp"
+            android:text="Trending"
+            style="@style/normalBtn"/>
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/popularBtn"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginRight="10dp"
-                android:text="Popular"
-                style="@style/focusBtn"/>
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/trendBtn"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginRight="10dp"
-                android:text="Trending"
-                style="@style/normalBtn"/>
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/followBtn"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginRight="10dp"
-                android:text="Following"
-                style="@style/normalBtn"/>
-
-        </LinearLayout>
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/followBtn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginRight="10dp"
+            android:text="Following"
+            style="@style/normalBtn"/>
 
     </LinearLayout>
 
@@ -92,7 +52,7 @@
         android:layout_marginTop="10dp"
         android:padding="8dp"
         android:background="#F6F7F9"
-        android:layout_below="@+id/layoutTop">
+        android:layout_below="@+id/listBtn">
 
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"

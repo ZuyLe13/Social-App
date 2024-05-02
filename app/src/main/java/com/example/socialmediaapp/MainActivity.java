@@ -5,18 +5,22 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import android.view.Menu;
 import com.example.socialmediaapp.fragments.SignIn;
 import com.example.socialmediaapp.fragments.SignUp;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 
 import android.view.MenuItem;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 
+import com.example.socialmediaapp.fragments.CreatePost;
 import com.example.socialmediaapp.fragments.Home;
+import com.example.socialmediaapp.fragments.Search;
 import com.example.socialmediaapp.fragments.UserProfile;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.example.socialmediaapp.fragments.Search;
 import com.example.socialmediaapp.fragments.Notification;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -42,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
                     loadFragment(new Home(), false);
                 } else if (itemId == R.id.navSearch) {
                     loadFragment(new Search(), false);
+                } else if (itemId == R.id.navAddPost) {
+                    loadFragment(new CreatePost(), false);
                 } else if (itemId == R.id.navNotification) {
                     loadFragment(new Notification(), false);
                 } else {
@@ -53,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         loadFragment(new Home(), true);
-
     }
 
     private void loadFragment(Fragment frag, boolean isAppInitialized) {
