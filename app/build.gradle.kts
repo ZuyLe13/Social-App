@@ -89,4 +89,5 @@ dependencies {
     debugImplementation(libs.ui.test.manifest)
 
     implementation("com.facebook.android:facebook-android-sdk:[4,5)")
+    implementation("de.hdodenhof:circleimageview:3.1.0")
 }

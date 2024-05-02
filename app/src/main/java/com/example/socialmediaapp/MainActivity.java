@@ -9,6 +9,15 @@ import com.example.socialmediaapp.fragments.SignIn;
 import com.example.socialmediaapp.fragments.SignUp;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+
+import android.view.MenuItem;
+import androidx.annotation.NonNull;
+
+import com.example.socialmediaapp.fragments.Home;
+import com.example.socialmediaapp.fragments.UserProfile;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.example.socialmediaapp.fragments.Search;
+import com.example.socialmediaapp.fragments.Notification;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -20,33 +29,30 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_sign_up);
+        setContentView(R.layout.activity_main);
 
-        loadFragment(new SignUp(), true); // Thêm SignUp Fragment vào activity
+        bottomNavView = findViewById(R.id.bottomNavView);
 
+        bottomNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                int itemId = menuItem.getItemId();
 
-//        bottomNavView = findViewById(R.id.bottomNavView);
-//
-//        bottomNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-//            @Override
-//            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-//                int itemId = menuItem.getItemId();
-//
-//                if (itemId == R.id.navHome) {
-//                    loadFragment(new Home(), false);
-//                } else if (itemId == R.id.navSearch) {
-//                    loadFragment(new Search(), false);
-//                } else if (itemId == R.id.navNotification) {
-//                    loadFragment(new Notification(), false);
-//                } else {
-//                    loadFragment(new Profile(), false);
-//                }
-//
-//                return true;
-//            }
-//        });
-//
-//        loadFragment(new Home(), true);
+                if (itemId == R.id.navHome) {
+                    loadFragment(new Home(), false);
+                } else if (itemId == R.id.navSearch) {
+                    loadFragment(new Search(), false);
+                } else if (itemId == R.id.navNotification) {
+                    loadFragment(new Notification(), false);
+                } else {
+                    loadFragment(new UserProfile(), false);
+                }
+
+                return true;
+            }
+        });
+
+        loadFragment(new Home(), true);
 
     }
 

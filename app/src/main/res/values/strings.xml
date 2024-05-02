@@ -13,4 +13,10 @@
     <string name="title_activity_fbauth">FBAuthActivity</string>
 
 
+    <string name="followers">Followers</string>
+    <string name="following">Following</string>
+    <string name="posts">Posts</string>
+    <string name="add_description">Add description</string>
+    <string name="shots">Shots</string>
+    <string name="collections">Collections</string>
 </resources>
