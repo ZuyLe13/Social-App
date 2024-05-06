@@ -1,16 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/notification"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.Notification">
+    tools:context=".fragments.Notification"
+    android:padding="16dp">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/notiHeader"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Notification Fragment"
-        android:textSize="20dp"
-        android:layout_gravity="center"/>
+        android:gravity="center_vertical">
 
-</FrameLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="Activity"
+            style="@style/textLarge"/>
+
+        <TextView
+            android:id="@+id/countNotification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="(03)"
+            android:textColor="@color/primary"
+            style="@style/textLarge"/>
+
+        <ImageButton
+            android:id="@+id/settingBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_setting_outline"
+            android:background="#fff"
+            android:layout_marginStart="180dp"/>
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/notiHeader"
+        android:layout_marginTop="18dp" />
+
+</RelativeLayout>

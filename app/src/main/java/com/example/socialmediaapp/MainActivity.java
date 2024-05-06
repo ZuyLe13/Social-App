@@ -28,7 +28,6 @@ import androidx.fragment.app.FragmentTransaction;
 public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNavView;
-//    private FrameLayout frameLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
