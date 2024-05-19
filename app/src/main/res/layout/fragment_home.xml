@@ -95,6 +95,7 @@
         android:layout_below="@+id/layoutTop">
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/postRecycleView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
              />

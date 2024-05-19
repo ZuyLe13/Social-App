@@ -5,10 +5,15 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.MenuItem;
+import android.widget.FrameLayout;
+
 import androidx.annotation.NonNull;
 
+import com.example.socialmediaapp.fragments.Add;
 import com.example.socialmediaapp.fragments.Home;
+import com.example.socialmediaapp.fragments.Profile;
 import com.example.socialmediaapp.fragments.UserProfile;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.example.socialmediaapp.fragments.Search;
@@ -19,7 +24,7 @@ import androidx.fragment.app.FragmentTransaction;
 public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNavView;
-//    private FrameLayout frameLayout;
+    private FrameLayout frameLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         bottomNavView = findViewById(R.id.bottomNavView);
-
         bottomNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -37,18 +41,18 @@ public class MainActivity extends AppCompatActivity {
                     loadFragment(new Home(), false);
                 } else if (itemId == R.id.navSearch) {
                     loadFragment(new Search(), false);
+                } else if (itemId == R.id.navAddPost) {
+                    loadFragment(new Add(), false);
                 } else if (itemId == R.id.navNotification) {
                     loadFragment(new Notification(), false);
                 } else {
-                    loadFragment(new UserProfile(), false);
+                    loadFragment(new Profile(), false);
                 }
 
                 return true;
             }
         });
-
         loadFragment(new Home(), true);
-
     }
 
     private void loadFragment(Fragment frag, boolean isAppInitialized) {
@@ -65,4 +69,5 @@ public class MainActivity extends AppCompatActivity {
         fragTransaction.commit();
 
     }
+
 }

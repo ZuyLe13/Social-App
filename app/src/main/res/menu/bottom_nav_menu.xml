@@ -13,6 +13,9 @@
         android:id="@+id/navSearch"
         android:icon="@drawable/search"/>
     <item
+        android:id="@+id/navAddPost"
+        android:icon="@drawable/ic_add"/>
+    <item
         android:id="@+id/navNotification"
         android:icon="@drawable/notification"/>
     <item

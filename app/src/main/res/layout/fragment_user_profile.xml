@@ -70,17 +70,16 @@
                 app:civ_border_width="1dp"
                  />
 
-<!--            <ImageButton-->
-<!--                android:id="@+id/edit_profileImage"-->
-<!--                android:layout_width="34dp"-->
-<!--                android:layout_height="34dp"-->
-<!--                android:layout_alignEnd="@id/profileImage"-->
-<!--                android:layout_alignRight="@id/profileImage"-->
-<!--                android:layout_alignBottom="@id/profileImage"-->
-<!--                android:background="@drawable/ic_setting"-->
-<!--                android:elevation="3dp"-->
-<!--                android:src="@drawable/ic_instagram"-->
-<!--                android:visibility="gone" />-->
+            <ImageButton
+                android:id="@+id/edit_profileImage"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:layout_alignEnd="@id/profileImage"
+                android:layout_alignRight="@id/profileImage"
+                android:layout_alignBottom="@id/profileImage"
+                android:background="@drawable/ic_circle"
+                android:elevation="3dp"
+                android:src="@drawable/ic_edit"/>
 
         </LinearLayout>
 
@@ -193,7 +192,20 @@
             android:layout_height="wrap_content"
             android:id="@+id/VDLayout"
             android:layout_below="@id/countLayout"
-            android:gravity="center">
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/followBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Follow"
+                android:textSize="16dp"
+                android:paddingHorizontal="30dp"
+                android:layout_margin="3dp"
+                android:visibility="gone"
+                />
+
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/ListFriend_Btn"
                 android:layout_width="match_parent"
