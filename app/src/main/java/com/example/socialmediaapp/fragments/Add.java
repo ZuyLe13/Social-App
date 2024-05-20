@@ -70,7 +70,6 @@ public class Add extends Fragment {
     private ImageButton backBtn, nextBtn;
     private List<GalleryImageModel> galleryList;
     private GalleryAdapter galleryAdapter;
-
     private Uri imageUri;
     private String imageURL;
     private FirebaseUser user;
