@@ -100,10 +100,11 @@ public class Home extends Fragment {
             Log.e("Firestore Error", "User is not authenticated.");
             return;
         }
-
+        Log.e("Firestore Error", "before ref");
         CollectionReference reference = FirebaseFirestore.getInstance().collection("Users")
                         .document(user.getUid())
                                 .collection("Post Images");
+        Log.e("Firestore Error", "after ref");
         reference.addSnapshotListener(getActivity(), new EventListener<QuerySnapshot>(){
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {

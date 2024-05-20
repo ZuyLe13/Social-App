@@ -50,10 +50,12 @@ public class MainActivity extends AppCompatActivity {
                     loadFragment(new Home(), false);
                 } else if (itemId == R.id.navSearch) {
                     loadFragment(new Search(), false);
+                } else if (itemId == R.id.navAddPost) {
+                    loadFragment(new Add(), false);
                 } else if (itemId == R.id.navNotification) {
                     loadFragment(new Notification(), false);
                 } else {
-                    loadFragment(new UserProfile(), false);
+                    loadFragment(new Profile(), false);
                 }
 
                 return true;
