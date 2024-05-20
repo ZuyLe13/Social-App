@@ -58,7 +58,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryH
         return galleryList.size();
     }
 
-    class GalleryHolder extends RecyclerView.ViewHolder{
+    static class GalleryHolder extends RecyclerView.ViewHolder{
 
         private ImageView postImageView;
 

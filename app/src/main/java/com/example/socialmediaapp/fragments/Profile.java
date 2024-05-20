@@ -206,58 +206,58 @@ public class Profile extends Fragment {
             profilePostImageView = itemView.findViewById(R.id.profilePostImageView);
         }
     }
-//
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data){
-//        super.onActivityResult(requestCode, resultCode, data);
-//
-//        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE
-//                && resultCode == RESULT_OK){
-//            CropImage.ActivityResult result = CropImage.getActivityResult(data);
-//            Uri uri = result.getUri();
-//            uploadImage(uri);
-//        }
-//    }
-//
-//    private void uploadImage(Uri uri){
-//        StorageReference reference = FirebaseStorage.getInstance().getReference().child("Profile Images");
-//        reference.putFile(uri)
-//                .addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-//                        if (task.isSuccessful()){
-//                            reference.getDownloadUrl()
-//                                    .addOnSuccessListener(new OnSuccessListener<Uri>() {
-//                                        @Override
-//                                        public void onSuccess(Uri uri) {
-//                                            String imageURL = uri.toString();
-//                                            UserProfileChangeRequest.Builder request = new UserProfileChangeRequest.Builder();
-//                                            request.setPhotoUri(uri);
-//
-//                                            Map<String, Object> map = new HashMap<>();
-//                                            map.put("profileImg", imageURL);
-//
-//                                            user.updateProfile(request.build());
-//                                            FirebaseFirestore.getInstance().collection(("Users"))
-//                                                    .document(user.getUid())
-//                                                    .update(map).addOnCompleteListener(new OnCompleteListener<Void>() {
-//                                                        @Override
-//                                                        public void onComplete(@NonNull Task<Void> task) {
-//                                                            if (task.isSuccessful()){
-//                                                                Toast.makeText(getContext(), "Update Successfully !", Toast.LENGTH_SHORT).show();
-//                                                            } else {
-//                                                                Toast.makeText(getContext(), "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-//                                                            }
-//                                                        }
-//                                                    });
-//                                        }
-//                                    });
-//                        } else {
-//                            Toast.makeText(getContext(), "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-//                        }
-//                    }
-//                });
-//    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE
+                && resultCode == RESULT_OK){
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            Uri uri = result.getUri();
+            uploadImage(uri);
+        }
+    }
+
+    private void uploadImage(Uri uri){
+        StorageReference reference = FirebaseStorage.getInstance().getReference().child("Profile Images");
+        reference.putFile(uri)
+                .addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                        if (task.isSuccessful()){
+                            reference.getDownloadUrl()
+                                    .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                        @Override
+                                        public void onSuccess(Uri uri) {
+                                            String imageURL = uri.toString();
+                                            UserProfileChangeRequest.Builder request = new UserProfileChangeRequest.Builder();
+                                            request.setPhotoUri(uri);
+
+                                            Map<String, Object> map = new HashMap<>();
+                                            map.put("profileImg", imageURL);
+
+                                            user.updateProfile(request.build());
+                                            FirebaseFirestore.getInstance().collection(("Users"))
+                                                    .document(user.getUid())
+                                                    .update(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                            if (task.isSuccessful()){
+                                                                Toast.makeText(getContext(), "Update Successfully !", Toast.LENGTH_SHORT).show();
+                                                            } else {
+                                                                Toast.makeText(getContext(), "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                                            }
+                                                        }
+                                                    });
+                                        }
+                                    });
+                        } else {
+                            Toast.makeText(getContext(), "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
 
     @Override
     public void onStart(){

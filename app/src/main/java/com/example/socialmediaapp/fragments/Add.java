@@ -9,6 +9,11 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
@@ -17,6 +22,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,6 +54,7 @@ import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageOptions;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.File;
@@ -67,6 +75,7 @@ public class Add extends Fragment {
     private String imageURL;
     private FirebaseUser user;
     Dialog dialog;
+    ActivityResultLauncher<Intent> resultLauncher;
     public Add() {
 
     }
@@ -90,8 +99,10 @@ public class Add extends Fragment {
         galleryAdapter = new GalleryAdapter(galleryList);
         postRecyclerView.setAdapter(galleryAdapter);
 
+        registerResult();
+        pickImage();
         clickListener();
-        //nextBtn.setVisibility(View.VISIBLE);
+
     }
 
     private void clickListener(){
@@ -110,8 +121,7 @@ public class Add extends Fragment {
             @Override
             public void onClick(View view) {
                 FirebaseStorage storage = FirebaseStorage.getInstance();
-                final StorageReference storageReference = storage.getReference().child("Post Images" + System.currentTimeMillis());
-
+                final StorageReference storageReference = storage.getReference().child("Post Images/" + System.currentTimeMillis());
                 dialog.show();
 
                 storageReference.putFile(imageUri)
@@ -134,6 +144,31 @@ public class Add extends Fragment {
                         });
             }
         });
+    }
+
+    private void registerResult(){
+        resultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult o) {
+                        try {
+                            imageUri = o.getData().getData();
+                            postImageView.setImageURI(imageUri);
+                            postImageView.setVisibility(View.VISIBLE);
+                            nextBtn.setVisibility(View.VISIBLE);
+                            Log.d("TEST !!!", "Image URI: " + imageUri);
+                        } catch (Exception e){
+                            Toast.makeText(getContext(), "No image selected", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+        );
+    }
+
+    private void pickImage(){
+        Intent intent = new Intent(MediaStore.ACTION_PICK_IMAGES);
+        resultLauncher.launch(intent);
     }
 
     private void uploadData(String imageURL){
@@ -190,60 +225,67 @@ public class Add extends Fragment {
     public void onResume(){
         super.onResume();
 
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
 
-                Dexter.withContext(getContext())
-                        .withPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                Manifest.permission.READ_EXTERNAL_STORAGE)
-                        .withListener(new MultiplePermissionsListener() {
-                            @Override
-                            public void onPermissionsChecked(MultiplePermissionsReport report) {
-                                if (report.areAllPermissionsGranted()){
-                                    File file = new File(Environment.getExternalStorageDirectory().toString() + "/Download");
-                                    if (file.exists()){
-                                        File[] files = file.listFiles();
 
-                                        assert files != null;
-                                        for (File fileitem : files){
-                                            if (fileitem.getAbsolutePath().endsWith(".jpg") ||
-                                                    fileitem.getAbsolutePath().endsWith(".png")){
-                                                galleryList.add(new GalleryImageModel(Uri.fromFile(fileitem)));
-                                                galleryAdapter.notifyDataSetChanged();
-                                            }
-                                        }
-
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void onPermissionRationaleShouldBeShown(List<PermissionRequest> list, PermissionToken permissionToken) {
-
-                            }
-                        });
-            }
-        });
+//        getActivity().runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//
+//                Log.d("TEST !!!", "before get permission in onResume and get path");
+//                Dexter.withContext(getContext())
+//                        .withPermissions(Manifest.permission.READ_EXTERNAL_STORAGE,
+//                                Manifest.permission.READ_EXTERNAL_STORAGE,
+//                                Manifest.permission.MANAGE_EXTERNAL_STORAGE
+//                                )
+//                        .withListener(new MultiplePermissionsListener() {
+//                            @Override
+//                            public void onPermissionsChecked(MultiplePermissionsReport report) {
+//                                if (report.areAllPermissionsGranted()){
+//                                    Log.d("TEST !!!", "hello 1");
+////                                    File file = new File(Environment.getExternalStorageDirectory().toString() + "/Download");
+//                                    File file = new File(Environment.DIRECTORY_DOWNLOADS);
+//                                    if (file.exists()){
+//                                        File[] files = file.listFiles();
+//
+//                                        assert files != null;
+//                                        for (File fileitem : files){
+//                                            if (fileitem.getAbsolutePath().endsWith(".jpg") ||
+//                                                    fileitem.getAbsolutePath().endsWith(".png")){
+//                                                galleryList.add(new GalleryImageModel(Uri.fromFile(fileitem)));
+//                                                galleryAdapter.notifyDataSetChanged();
+//                                            }
+//                                        }
+//
+//                                    }
+//                                }
+//                            }
+//
+//                            @Override
+//                            public void onPermissionRationaleShouldBeShown(List<PermissionRequest> list, PermissionToken permissionToken) {
+//                                Log.d("TEST !!!", "Permission rationale should be shown");
+//                                permissionToken.continuePermissionRequest();
+//                            }
+//                        });
+//            }
+//        });
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data){
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE){
-            CropImage.ActivityResult result = CropImage.getActivityResult(data);
-
-            if (requestCode == RESULT_OK){
-
-                imageUri = result.getUri();
-
-                Glide.with(getContext())
-                        .load(imageUri)
-                        .into(postImageView);
-                postImageView.setVisibility(View.VISIBLE);
-                nextBtn.setVisibility(View.VISIBLE);
-            }
-        }
-    }
+//    @Override
+//    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data){
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE){
+//            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+//
+//            if (requestCode == RESULT_OK){
+//
+//                imageUri = result.getUri();
+//
+//                Glide.with(getContext())
+//                        .load(imageUri)
+//                        .into(postImageView);
+//                postImageView.setVisibility(View.VISIBLE);
+//                nextBtn.setVisibility(View.VISIBLE);
+//            }
+//        }
+//    }
 }
