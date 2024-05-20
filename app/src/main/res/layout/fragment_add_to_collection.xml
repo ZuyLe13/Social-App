@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/first1"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:orientation="horizontal"
+
+        >
+        <!-- Button to Save to Collection -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnSaveToCollection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="30dp"
+            android:layout_weight="1"
+            android:background="@drawable/auth_bg"
+            android:text="Save to collection"
+            android:textStyle="bold"/>
+
+        <!-- Button to create New Collection -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnNewCollection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/gradient_bg"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:text="New collection" />
+
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/second2"
+        android:layout_below="@+id/first1"
+        android:layout_marginTop="10dp">
+        <!-- Text View for "Your Collections" -->
+        <TextView
+            android:id="@+id/tvYourCollections"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Your Collections"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginStart="10dp"
+            android:layout_below="@id/btnNewCollection"
+            android:layout_marginTop="16dp"
+
+
+             />
+
+    </LinearLayout>
+
+
+    <!-- Recycler View for displaying collections -->
+    <androidx.recyclerview.widget.RecyclerView
+
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/second2"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
+
+</RelativeLayout>

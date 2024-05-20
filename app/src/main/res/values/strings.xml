@@ -1,10 +1,23 @@
 <resources>
     <string name="app_name">SocialMediaApp</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="default_web_client_id">319239872006-o4vfkad471ri5pt1bu46076i3a44dulu.apps.googleusercontent.com</string>
+    <string name="oauth_client_id">
+            366113153389-37aq2fhpe5b2firsqfd0icc1sbq3kflt.apps.googleusercontent.com
+    </string>
+    <string name="title_activity_splash">SplashActivity</string>
+
+    <string name="facebook_app_id">1234</string>
+    <string name="fb_login_protocol_scheme">fb1234</string>
+    <string name="facebook_client_token">56789</string>
+    <string name="title_activity_fbauth">FBAuthActivity</string>
+
+
     <string name="followers">Followers</string>
     <string name="following">Following</string>
     <string name="posts">Posts</string>
     <string name="add_description">Add description</string>
     <string name="shots">Shots</string>
     <string name="collections">Collections</string>
+
 </resources>

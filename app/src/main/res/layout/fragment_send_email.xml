@@ -65,6 +65,16 @@
             android:textAlignment="center"
             android:hint="Email" />
 
+        <ProgressBar
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/progressBar"
+            android:visibility="gone"
+            android:layout_below="@id/emailET"
+            android:layout_above="@id/verifyBtn"/>
+        <!-- Nen chinh lai layout_below -->
+
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/verifyBtn"

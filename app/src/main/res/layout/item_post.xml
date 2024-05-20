@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/itemPost"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -12,19 +13,24 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/userAvt"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="20dp"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_marginStart="14dp"
             android:layout_marginEnd="14dp"
             android:src="@drawable/ic_avt"/>
 
-        <TextView
-            android:id="@+id/userName"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Thanh Pham"
-            style="@style/textNormal"
-            android:src="@drawable/ic_avt"/>
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/userName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Thanh Pham"
+                style="@style/textNormal"
+                android:src="@drawable/ic_avt"/>
 
         <TextView
             android:id="@+id/timeStampTextView"
@@ -34,6 +40,15 @@
             style="@style/textSmall"
             android:layout_marginLeft="130dp"
             android:src="@drawable/ic_avt"/>
+
+        </LinearLayout>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_storage"
+            android:layout_marginStart="190dp"
+            android:background="#fff"/>
 
     </LinearLayout>
 
@@ -62,43 +77,15 @@
         android:paddingTop="8dp"
         android:paddingBottom="8dp">
 
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="190dp"
-            android:src="@drawable/ic_storage"
-            android:background="#fff"/>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center">
-
-            <TextView
-                android:id="@+id/commentCountTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:text="20"
-                style="@style/textSmall"/>
-
-            <ImageButton
-                android:id="@+id/commentBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_comment"
-                android:background="#fff"/>
-
-        </LinearLayout>
-
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:layout_weight="1"
             android:layout_marginStart="20dp">
 
             <TextView
-                android:id="@+id/reactCountTextView"
+                android:id="@+id/commentCountTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
@@ -106,13 +93,43 @@
                 style="@style/textSmall"/>
 
             <ImageButton
-                android:id="@+id/reactBtn"
+                android:id="@+id/commentBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_heart"
                 android:background="#fff"/>
 
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/reactCountTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:text="20"
+                style="@style/textSmall"/>
+
+            <ImageButton
+                android:id="@+id/reactBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_comment"
+                android:background="#fff"/>
+
+        </LinearLayout>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/ic_share"
+            android:background="#fff"/>
 
     </LinearLayout>
 
