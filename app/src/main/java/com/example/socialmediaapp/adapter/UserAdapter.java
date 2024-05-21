@@ -1,5 +1,6 @@
 package com.example.socialmediaapp.adapter;
 
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +38,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder>{
     }
 
     @Override
-    public void onBindViewHolder(@NonNull UserHolder holder, int position) {
+    public void onBindViewHolder(@NonNull UserHolder holder, @SuppressLint("RecyclerView") int position) {
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
