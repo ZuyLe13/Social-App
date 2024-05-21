@@ -62,7 +62,8 @@ public class SignIn extends Fragment {
     private boolean showOneTapUI = true;
     GoogleSignInClient mGoogleSignInClient;
 
-    protected FirebaseAuth auth;
+    public static FirebaseAuth auth;
+    public static FirebaseUser user;
 //    private LoginButton FBsignInbtn2;
 
     public ImageButton getFacebookSignInButton() {
@@ -225,7 +226,7 @@ public class SignIn extends Fragment {
             Activity activity = getActivity();
             progressBar.setVisibility(View.GONE);
             if (activity instanceof FragmentReplacerActivity) {
-
+                user = FirebaseAuth.getInstance().getCurrentUser();
                 ((FragmentReplacerActivity) getActivity()).setFragment(new Home());
             }
             else {

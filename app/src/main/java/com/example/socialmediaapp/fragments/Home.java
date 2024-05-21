@@ -39,6 +39,10 @@ public class Home extends Fragment {
     private FirebaseUser user;
     public static int LIST_SIZE = 0;
 
+    public Home(){
+
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -55,7 +59,6 @@ public class Home extends Fragment {
         adapter = new HomeAdapter(postList, getContext());
         postRecycleView.setAdapter(adapter);
 
-        loadDataFromFireStore();
     }
 
     private void init(View view){
@@ -100,12 +103,13 @@ public class Home extends Fragment {
             Log.e("Firestore Error", "User is not authenticated.");
             return;
         }
+
         Log.e("Firestore Error", "before ref");
         CollectionReference reference = FirebaseFirestore.getInstance().collection("Users")
                         .document(user.getUid())
                                 .collection("Post Images");
         Log.e("Firestore Error", "after ref");
-        reference.addSnapshotListener(getActivity(), new EventListener<QuerySnapshot>(){
+        reference.addSnapshotListener(new EventListener<QuerySnapshot>(){
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 if (error != null){
@@ -124,7 +128,6 @@ public class Home extends Fragment {
                     if (!snapshot.exists()) {
                         return;
                     }
-
                     HomeModel model = snapshot.toObject(HomeModel.class);
                     postList.add(new HomeModel(
                             model.getUserName(),
@@ -145,5 +148,11 @@ public class Home extends Fragment {
 //                LIST_SIZE = postList.size();
             }
         });
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        loadDataFromFireStore();
     }
 }

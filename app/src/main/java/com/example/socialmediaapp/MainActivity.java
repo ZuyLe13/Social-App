@@ -29,10 +29,12 @@ import com.example.socialmediaapp.fragments.Notification;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Search.OnDataPass {
 
     private BottomNavigationView bottomNavView;
     private FrameLayout frameLayout;
+    public static String currentUid;
+    public static Boolean isSearching = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
                 } else if (itemId == R.id.navNotification) {
                     loadFragment(new Notification(), false);
                 } else {
+                    isSearching = false;
                     loadFragment(new Profile(), false);
                 }
 
@@ -79,5 +82,25 @@ public class MainActivity extends AppCompatActivity {
 
         fragTransaction.commit();
 
+    }
+
+
+
+    @Override
+    public void onChange(String uID) {
+        currentUid = uID;
+        isSearching = true;
+        loadFragment(new Profile(), false);
+    }
+
+    @Override
+    public void onBackPressed(){
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.frameLayout);
+        if (currentFragment instanceof Profile){
+            isSearching = false;
+            loadFragment(new Home(), false);
+        } else {
+            super.onBackPressed();
+        }
     }
 }

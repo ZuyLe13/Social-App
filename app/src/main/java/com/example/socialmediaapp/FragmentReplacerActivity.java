@@ -2,6 +2,7 @@ package com.example.socialmediaapp;
 
 import android.os.Bundle;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;

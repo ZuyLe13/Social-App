@@ -88,6 +88,7 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:21.1.0")
     implementation("com.firebaseui:firebase-ui-firestore:8.0.2")
     implementation("com.karumi:dexter:6.2.3")
+    implementation("com.google.firebase:firebase-firestore:23.0.3")
 
     androidTestImplementation(libs.ui.test.junit4)
     androidTestImplementation(platform(libs.compose.bom))
