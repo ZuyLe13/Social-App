@@ -26,6 +26,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeHolder> {
     private List<HomeModel> list;
     private Context context;
+    private OnPressed onPressed;
 
     public HomeAdapter(List<HomeModel> list, Context context) {
         this.list = list;
@@ -42,22 +43,22 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull HomeHolder holder, int position) {
-        holder.userNameTV.setText(list.get(position).getUserName());
+        holder.userNameTV.setText(list.get(position).getName());
         holder.timeStampTV.setText("" + list.get(position).getTimeStamp());
 
-        int reactCount = list.get(position).getReactCount();
-        if (reactCount == 0) {
-            holder.reactCountTV.setVisibility(View.INVISIBLE);
-        } else {
-            holder.reactCountTV.setText(String.valueOf(reactCount));
-        }
+        List<String> reactList = list.get(position).getReactList();
+//        if (reactList.isEmpty()) {
+//            holder.reactCountTV.setVisibility(View.INVISIBLE);
+//        } else {
+//            holder.reactCountTV.setText(String.valueOf(reactList.size()));
+//        }
 
-        int commentCount = list.get(position).getCommentCount();
-        if (commentCount == 0) {
-            holder.commentCountTV.setVisibility(View.INVISIBLE);
-        } else {
-            holder.commentCountTV.setText(String.valueOf(commentCount));
-        }
+//        int commentCount = list.get(position).getCommentCount();
+//        if (commentCount == 0) {
+//            holder.commentCountTV.setVisibility(View.INVISIBLE);
+//        } else {
+//            holder.commentCountTV.setText(String.valueOf(commentCount));
+//        }
 
         holder.descriptionTV.setText(list.get(position).getDescription());
 
@@ -75,6 +76,8 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeHolder> {
                 .placeholder(new ColorDrawable(color))
                 .timeout(7000)
                 .into(holder.imageView);
+
+        holder.clickListener(position, list.get(position).getId(), list.get(position).getName());
     }
 
     @Override
@@ -82,7 +85,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeHolder> {
         return list.size();
     }
 
-    static class HomeHolder extends RecyclerView.ViewHolder{
+    class HomeHolder extends RecyclerView.ViewHolder{
 
         private CircleImageView profileImage;
         private TextView userNameTV, timeStampTV, commentCountTV, reactCountTV, descriptionTV;
@@ -99,10 +102,27 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeHolder> {
             commentCountTV = itemView.findViewById(R.id.commentCountTextView);
             reactBtn = itemView.findViewById(R.id.reactBtn);
             commentBtn = itemView.findViewById(R.id.commentBtn);
-//            shareBtn = itemView.findViewById(R.id.shareBtn);
+            shareBtn = itemView.findViewById(R.id.shareBtn);
             descriptionTV = itemView.findViewById(R.id.desciptionTextView);
 
         }
+
+        public void clickListener(int position, String id, String name) {
+            reactBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onPressed.onReacted(position, id);
+                }
+            });
+        }
+    }
+
+    public interface OnPressed{
+        void onReacted (int position, String id);
+        void onComment(int position, String id, String comment);
+    }
+    public void OnPressed (OnPressed onPressed){
+        this.onPressed = onPressed;
     }
 
 }

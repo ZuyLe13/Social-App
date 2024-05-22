@@ -35,6 +35,9 @@ public class MainActivity extends AppCompatActivity implements Search.OnDataPass
     private FrameLayout frameLayout;
     public static String currentUid;
     public static Boolean isSearching = false;
+    public static String MyName;
+
+    public MainActivity(){}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements Search.OnDataPass
         setContentView(R.layout.activity_main);
 
         bottomNavView = findViewById(R.id.bottomNavView);
+        frameLayout = findViewById(R.id.frameLayout);
 
         bottomNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -75,9 +79,9 @@ public class MainActivity extends AppCompatActivity implements Search.OnDataPass
         FragmentTransaction fragTransaction = fragManager.beginTransaction();
 
         if (isAppInitialized) {
-            fragTransaction.add(R.id.frameLayout, frag);
+            fragTransaction.add(frameLayout.getId(), frag);
         } else {
-            fragTransaction.replace(R.id.frameLayout, frag);
+            fragTransaction.replace(frameLayout.getId(), frag);
         }
 
         fragTransaction.commit();

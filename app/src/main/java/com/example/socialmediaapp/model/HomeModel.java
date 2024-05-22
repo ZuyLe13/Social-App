@@ -3,10 +3,11 @@ package com.example.socialmediaapp.model;
 import com.google.firebase.firestore.ServerTimestamp;
 
 import java.util.Date;
+import java.util.List;
 
 public class HomeModel {
-    private String userName, profileImage, imageUrl, uid, comments, description, id;
-    private int reactCount, commentCount;
+    private String name, profileImage, imageUrl, uid, comments, description, id;
+    private List<String> reactList;
     @ServerTimestamp
     private Date timeStamp;
 
@@ -14,25 +15,24 @@ public class HomeModel {
 
     }
 
-    public HomeModel(String userName, String profileImage, String imageUrl, String uid, String comments, String description, String id, int reactCount, int commentCount, Date timeStamp) {
-        this.userName = userName;
+    public HomeModel(String name, String profileImage, String imageUrl, String uid, String comments, String description, String id, List<String> reactList, Date timeStamp) {
+        this.name = name;
         this.profileImage = profileImage;
         this.imageUrl = imageUrl;
         this.uid = uid;
         this.comments = comments;
         this.description = description;
         this.id = id;
-        this.reactCount = reactCount;
-        this.commentCount = commentCount;
+        this.reactList = reactList;
         this.timeStamp = timeStamp;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getName() {
+        return name;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUserName(String name) {
+        this.name = name;
     }
 
     public String getProfileImage() {
@@ -83,20 +83,12 @@ public class HomeModel {
         this.id = id;
     }
 
-    public int getReactCount() {
-        return reactCount;
+    public List<String> getReactList() {
+        return reactList;
     }
 
-    public void setReactCount(int reactCount) {
-        this.reactCount = reactCount;
-    }
-
-    public int getCommentCount() {
-        return commentCount;
-    }
-
-    public void setCommentCount(int commentCount) {
-        this.commentCount = commentCount;
+    public void setReactList(List<String> reactList) {
+        this.reactList = reactList;
     }
 
     public Date getTimeStamp() {

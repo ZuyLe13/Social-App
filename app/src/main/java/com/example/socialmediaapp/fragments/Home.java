@@ -1,5 +1,7 @@
 package com.example.socialmediaapp.fragments;
 
+import static com.example.socialmediaapp.MainActivity.MyName;
+
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toolbar;
 
+import com.bumptech.glide.Glide;
 import com.example.socialmediaapp.R;
 import com.example.socialmediaapp.adapter.HomeAdapter;
 import com.example.socialmediaapp.model.HomeModel;
@@ -22,6 +25,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -59,6 +63,7 @@ public class Home extends Fragment {
         adapter = new HomeAdapter(postList, getContext());
         postRecycleView.setAdapter(adapter);
 
+        loadDataFromFireStore();
     }
 
     private void init(View view){
@@ -71,9 +76,9 @@ public class Home extends Fragment {
         postRecycleView.setLayoutManager(new LinearLayoutManager(getContext()));
 
 
-        authTemp("21522605@gm.uit.edu.vn", "123456");
-//        FirebaseAuth auth = FirebaseAuth.getInstance();
-//        user = auth.getCurrentUser();
+//        authTemp("21522605@gm.uit.edu.vn", "123456");
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
     }
 
     public void authTemp(String email, String password) {
@@ -104,11 +109,9 @@ public class Home extends Fragment {
             return;
         }
 
-        Log.e("Firestore Error", "before ref");
         CollectionReference reference = FirebaseFirestore.getInstance().collection("Users")
                         .document(user.getUid())
                                 .collection("Post Images");
-        Log.e("Firestore Error", "after ref");
         reference.addSnapshotListener(new EventListener<QuerySnapshot>(){
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
@@ -130,22 +133,32 @@ public class Home extends Fragment {
                     }
                     HomeModel model = snapshot.toObject(HomeModel.class);
                     postList.add(new HomeModel(
-                            model.getUserName(),
+                            model.getName(),
                             model.getProfileImage(),
                             model.getImageUrl(),
                             model.getUid(),
                             model.getComments(),
                             model.getDescription(),
                             model.getId(),
-                            model.getReactCount(),
-                            model.getCommentCount(),
+                            model.getReactList(),
                             model.getTimeStamp()
                     ));
                 }
 
                 adapter.notifyDataSetChanged();
+            }
+        });
 
-//                LIST_SIZE = postList.size();
+        DocumentReference userRef = FirebaseFirestore.getInstance().collection("Users").document(user.getUid());
+        userRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                if (error != null){
+                    return;
+                }
+                if (value.exists()){
+                    MyName = value.getString("name");
+                }
             }
         });
     }

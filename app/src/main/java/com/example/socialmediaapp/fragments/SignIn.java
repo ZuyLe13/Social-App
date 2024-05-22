@@ -227,7 +227,11 @@ public class SignIn extends Fragment {
             progressBar.setVisibility(View.GONE);
             if (activity instanceof FragmentReplacerActivity) {
                 user = FirebaseAuth.getInstance().getCurrentUser();
-                ((FragmentReplacerActivity) getActivity()).setFragment(new Home());
+
+                if (getActivity() == null)
+                    return;
+                startActivity(new Intent(getActivity().getApplicationContext(), MainActivity.class));
+                getActivity().finish();
             }
             else {
                 Log.d("not instanceof FragmentReplacerActivity", "" + getActivity());
