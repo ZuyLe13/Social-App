@@ -1,22 +1,37 @@
 package com.example.socialmediaapp.adapter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.socialmediaapp.FragmentReplacerActivity;
 import com.example.socialmediaapp.R;
 import com.example.socialmediaapp.fragments.Home;
 import com.example.socialmediaapp.model.HomeModel;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.List;
 import java.util.Random;
@@ -25,10 +40,11 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeHolder> {
     private List<HomeModel> list;
-    private Context context;
+    private Activity context;
     private OnPressed onPressed;
 
-    public HomeAdapter(List<HomeModel> list, Context context) {
+
+    public HomeAdapter(List<HomeModel> list, Activity context) {
         this.list = list;
         this.context = context;
     }
@@ -43,22 +59,33 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull HomeHolder holder, int position) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         holder.userNameTV.setText(list.get(position).getName());
         holder.timeStampTV.setText("" + list.get(position).getTimeStamp());
 
-        List<String> reactList = list.get(position).getReactList();
-//        if (reactList.isEmpty()) {
-//            holder.reactCountTV.setVisibility(View.INVISIBLE);
-//        } else {
-//            holder.reactCountTV.setText(String.valueOf(reactList.size()));
-//        }
+        List<String> reacts = list.get(position).getReacts();
+        if (reacts.size() == 0) {
+            holder.reactCountTV.setVisibility(View.GONE);
+        } else {
+            holder.reactCountTV.setVisibility(View.VISIBLE);
+            holder.reactCountTV.setText(String.valueOf(reacts.size()));
+        }
 
-//        int commentCount = list.get(position).getCommentCount();
-//        if (commentCount == 0) {
-//            holder.commentCountTV.setVisibility(View.INVISIBLE);
-//        } else {
-//            holder.commentCountTV.setText(String.valueOf(commentCount));
-//        }
+        if (reacts.contains(user.getUid())){
+            holder.reactBtn.setImageResource(R.drawable.ic_heart_fill);
+        } else {
+            holder.reactBtn.setImageResource(R.drawable.ic_heart);
+        }
+
+        int commentCount =list.get(position).getCommentCount();
+        holder.commentCountTV.setText(String.valueOf(commentCount));
+
+        if (commentCount == 0) holder.commentTV.setVisibility(View.GONE);
+        else {
+            holder.commentTV.setVisibility(View.VISIBLE);
+            if (commentCount == 1) holder.commentTV.setText("See comment");
+            else holder.commentTV.setText("See all " + String.valueOf(commentCount) + " comments");
+        }
 
         holder.descriptionTV.setText(list.get(position).getDescription());
 
@@ -77,7 +104,27 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeHolder> {
                 .timeout(7000)
                 .into(holder.imageView);
 
-        holder.clickListener(position, list.get(position).getId(), list.get(position).getName());
+        holder.clickListener(
+                position,
+                list.get(position).getId(),
+                list.get(position).getName(),
+                list.get(position).getUid(),
+                list.get(position).getReacts(),
+                reacts.contains(user.getUid()) ? 1 : 0,
+                list.get(position).getImageUrl()
+        );
+
+//        list.get(position).getSnapshot().getReference().collection("Comments")
+//                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+//                        if (error != null || value == null) return;
+//
+//                        for (QueryDocumentSnapshot snapshot : value){
+//
+//                        }
+//                    }
+//                });
     }
 
     @Override
@@ -88,9 +135,11 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeHolder> {
     class HomeHolder extends RecyclerView.ViewHolder{
 
         private CircleImageView profileImage;
-        private TextView userNameTV, timeStampTV, commentCountTV, reactCountTV, descriptionTV;
+        private TextView userNameTV, timeStampTV, commentCountTV, reactCountTV, descriptionTV, commentTV;
         private ImageView imageView;
-        private ImageButton reactBtn, commentBtn, shareBtn;
+        private ImageButton reactBtn, commentBtn, shareBtn, commentSendBtn;
+        private EditText commentET;
+        private LinearLayout commentLL;
         public HomeHolder(@NonNull View itemView) {
             super(itemView);
 
@@ -104,22 +153,61 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeHolder> {
             commentBtn = itemView.findViewById(R.id.commentBtn);
             shareBtn = itemView.findViewById(R.id.shareBtn);
             descriptionTV = itemView.findViewById(R.id.desciptionTextView);
-
+//            commentET = itemView.findViewById(R.id.commentET);
+//            commentSendBtn = itemView.findViewById(R.id.commentSendBtn);
+//            commentLL = itemView.findViewById(R.id.commentLL);
+            commentTV = itemView.findViewById(R.id.commentTV);
         }
 
-        public void clickListener(int position, String id, String name) {
+        public void clickListener(int position, String id, String name, String uID, List<String> reacts, int isChecked, String imageURL) {
             reactBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    onPressed.onReacted(position, id);
+                    onPressed.onReacted(position, id, uID, reacts, isChecked);
+                }
+            });
+
+            commentBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+//                    if (commentLL.getVisibility() == View.GONE){
+//                        commentLL.setVisibility(View.VISIBLE);
+//                    } else {
+//                        commentLL.setVisibility(View.GONE);
+//                    }
+
+                    Intent intent = new Intent(context, FragmentReplacerActivity.class);
+                    intent.putExtra("id", id);
+                    intent.putExtra("uid", uID);
+                    intent.putExtra("isComment", true);
+
+                    context.startActivity(intent);
+                }
+            });
+
+//            commentSendBtn.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    String commment = commentET.getText().toString();
+//                    onPressed.onCommented(position, id, uID, commment, commentLL, commentET);
+//                }
+//            });
+
+            shareBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.putExtra(Intent.EXTRA_TEXT, imageURL);
+                    intent.setType("text/*");
+                    context.startActivity(Intent.createChooser(intent, "Share link ..."));
                 }
             });
         }
     }
 
     public interface OnPressed{
-        void onReacted (int position, String id);
-        void onComment(int position, String id, String comment);
+        void onReacted (int position, String id, String uID, List<String> reacts, int isChecked);
+//        void onCommented(int position, String id, String uID, String comment, LinearLayout commentLL, EditText commentET);
     }
     public void OnPressed (OnPressed onPressed){
         this.onPressed = onPressed;

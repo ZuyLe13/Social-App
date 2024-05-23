@@ -28,7 +28,6 @@
                 android:id="@+id/userName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Thanh Pham"
                 style="@style/textNormal"
                 android:src="@drawable/ic_avt"/>
 
@@ -36,7 +35,6 @@
             android:id="@+id/timeStampTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="1h hour ago"
             style="@style/textSmall"
             android:layout_marginLeft="130dp"
             android:src="@drawable/ic_avt"/>
@@ -57,7 +55,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="10dp"
-        android:text="description"
         android:layout_marginTop="20dp"
         android:paddingHorizontal="10dp"/>
 
@@ -85,19 +82,18 @@
             android:layout_marginStart="20dp">
 
             <TextView
-                android:id="@+id/commentCountTextView"
+                android:id="@+id/reactCountTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
-                android:text="125"
                 style="@style/textSmall"/>
 
             <ImageButton
-                android:id="@+id/commentBtn"
+                android:id="@+id/reactBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_heart"
-                android:background="#fff"/>
+                android:background="@color/white"/>
 
         </LinearLayout>
 
@@ -108,15 +104,14 @@
             android:gravity="center">
 
             <TextView
-                android:id="@+id/reactCountTextView"
+                android:id="@+id/commentCountTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
-                android:text="20"
                 style="@style/textSmall"/>
 
             <ImageButton
-                android:id="@+id/reactBtn"
+                android:id="@+id/commentBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_comment"
@@ -130,8 +125,44 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:src="@drawable/ic_share"
-            android:background="#fff"/>
+            android:background="#fff" />
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/commentTV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="View all comments"
+        android:padding="8dp"
+        android:visibility="gone"/>
+
+<!--    <LinearLayout-->
+<!--        android:id="@+id/commentLL"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:visibility="gone"-->
+<!--        >-->
+<!--        <EditText-->
+<!--            android:id="@+id/commentET"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:background="@drawable/text_box"-->
+<!--            android:hint="Type your comment"-->
+<!--            android:padding="12dp"-->
+<!--            android:layout_weight="1"-->
+<!--            />-->
+
+<!--        <ImageButton-->
+<!--            android:id="@+id/commentSendBtn"-->
+<!--            android:layout_width="30dp"-->
+<!--            android:layout_height="30dp"-->
+<!--            android:background="@drawable/ic_send"-->
+<!--            android:layout_gravity="center"-->
+<!--            android:layout_margin="8dp"-->
+<!--            />-->
+<!--    </LinearLayout>-->
+
 
 </LinearLayout>

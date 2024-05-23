@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/itemComment"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,7 +13,7 @@
         android:background="@drawable/bg_comment">
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/userAvt"
+            android:id="@+id/commentedUserAvt"
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:layout_marginStart="14dp"
@@ -26,19 +26,17 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/userName"
+                android:id="@+id/commentedUserName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Thanh Pham"
                 style="@style/textTitle"
                 android:src="@drawable/ic_avt"/>
 
             <TextView
-                android:id="@+id/commentTV"
+                android:id="@+id/commentedCommentTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="Nhà đẹp 10 điểm!!!"
                 style="@style/textNormal"
                 android:src="@drawable/ic_avt"/>
 
@@ -50,18 +48,17 @@
                 android:gravity="center_vertical">
 
                 <TextView
+                    android:id="@+id/commentedTimeTV"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="1h"
                     style="@style/textSmall"
-                    android:textColor="#828282"
-                    android:src="@drawable/ic_avt"/>
+                    android:textColor="#828282"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="40dp"
-                    android:text="Like"
+                    android:text="React"
                     android:textColor="#242424"
                     style="@style/textSmall"/>
 
@@ -70,10 +67,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="160dp"
                     android:layout_marginEnd="10dp"
-                    android:text="20"
                     style="@style/textSmall"
-                    android:textColor="#828282"
-                    android:src="@drawable/ic_avt"/>
+                    android:textColor="#828282"/>
 
                 <ImageView
                     android:layout_width="wrap_content"

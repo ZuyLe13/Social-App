@@ -12,6 +12,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.socialmediaapp.fragments.Comment;
 import com.example.socialmediaapp.fragments.SignIn;
 import com.example.socialmediaapp.fragments.SignUp;
 
@@ -30,7 +31,13 @@ public class FragmentReplacerActivity extends AppCompatActivity {
         });
 
         frameLayout = findViewById(R.id.TframeLayout);
-        setFragment(new SignIn());
+
+        boolean isComment = getIntent().getBooleanExtra("isComment", false);
+        if (isComment) {
+            setFragment(new Comment());
+        } else {
+            setFragment(new SignIn());
+        }
     }
     public void setFragment(Fragment fragment){
         FragmentTransaction fragTrans = getSupportFragmentManager().beginTransaction();
@@ -39,6 +46,16 @@ public class FragmentReplacerActivity extends AppCompatActivity {
         if (fragment instanceof SignUp){
             fragTrans.addToBackStack(null);
         }
+        if (fragment instanceof Comment){
+            String id = getIntent().getStringExtra("id");
+            String uid = getIntent().getStringExtra("uid");
+
+            Bundle bundle = new Bundle();
+            bundle.putString("id", id);
+            bundle.putString("uid", uid);
+            fragment.setArguments(bundle);
+        }
+
         fragTrans.replace(frameLayout.getId(),fragment);
         fragTrans.commit();
     }
