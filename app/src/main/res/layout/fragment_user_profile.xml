@@ -248,119 +248,45 @@
             android:layout_below="@id/VDLayout"
             android:layout_marginTop="20dp"
             android:gravity="center">
-            <LinearLayout
+
+            <Button
+                android:id="@+id/shotsCountBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal">
-                <!-- TextView cho "Shot" -->
-                <TextView
-                    android:id="@+id/shotCountTv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:text="0"
-                    android:textColor="@android:color/black"
-                    android:textStyle="bold"
-                    android:gravity="center"
-                    android:clickable="true"
-                    android:focusable="true"
-                    />
-                <!--                tao khoang cach giua cac chu-->
-                <TextView
-                    android:layout_width="10dp"
-                    android:layout_height="wrap_content"
-                    android:text=" "
-                    android:gravity="center" />
-                    />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="@string/shots"
-                    android:textColor="@android:color/black"
-                    android:textStyle="bold"
-                    android:gravity="center"/>
-
-                <!-- RecyclerView cho "Shot" -->
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/shotRecyclerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/shotCountTv"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="16dp"
-                    android:visibility="gone" />
-<!--                tao khoang cach giua cac chu-->
-                <TextView
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:text=" "
-                    android:gravity="center" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal">
-                <!-- TextView cho "Collection" -->
-            <TextView
-                android:id="@+id/CollectionCountTv"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="0"
-                android:textColor="@android:color/black"
-                android:textStyle="bold"
-                android:gravity="center"/>
-                <!--                tao khoang cach giua cac chu-->
-                <TextView
-                    android:layout_width="10dp"
-                    android:layout_height="wrap_content"
-                    android:text=" "
-                    android:gravity="center" />
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="@string/collections"
-                android:textColor="@android:color/black"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:clickable="true"
-                android:focusable="true"
+                android:text="0 Shots"
+                android:layout_marginHorizontal="30dp"
                 />
-                <!-- RecyclerView cho "Collection" -->
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/collectionRecyclerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/CollectionCountTv"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="16dp"
-                    android:visibility="gone" />
 
-            </LinearLayout>
+            <Button
+                android:id="@+id/collectionsCountBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 Collections"
+                android:layout_marginHorizontal="30dp"
+                />
+
         </LinearLayout>
-
 
     </RelativeLayout>
 
-    <View
-        android:id="@+id/view"
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/collectionAddBtn"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/text_box"
+        android:text="Add a new collection"
         android:layout_below="@id/combinedLayout"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="8dp"
-        android:background="#C8C8C8"
+        android:visibility="gone"
+        android:layout_marginTop="10dp"
         />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/view" />
+        android:layout_below="@id/collectionAddBtn"
+        android:layout_marginTop="10dp"
+        />
 
 
 

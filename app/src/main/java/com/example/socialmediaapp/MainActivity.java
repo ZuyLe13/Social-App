@@ -26,6 +26,8 @@ import com.example.socialmediaapp.fragments.UserProfile;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.example.socialmediaapp.fragments.Search;
 import com.example.socialmediaapp.fragments.Notification;
+import com.google.firebase.auth.FirebaseAuth;
+
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -69,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements Search.OnDataPass
             }
         });
 
+        currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         loadFragment(new Home(), true);
 
     }

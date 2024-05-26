@@ -12,6 +12,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.socialmediaapp.fragments.Collection;
 import com.example.socialmediaapp.fragments.Comment;
 import com.example.socialmediaapp.fragments.SignIn;
 import com.example.socialmediaapp.fragments.SignUp;
@@ -32,9 +33,13 @@ public class FragmentReplacerActivity extends AppCompatActivity {
 
         frameLayout = findViewById(R.id.TframeLayout);
 
-        boolean isComment = getIntent().getBooleanExtra("isComment", false);
-        if (isComment) {
+        String FragmentType = "Init";
+        if (getIntent().getStringExtra("FragmentType") != null)
+            FragmentType = getIntent().getStringExtra("FragmentType");
+        if (FragmentType.equals("Comment")) {
             setFragment(new Comment());
+        } else if (FragmentType.equals("Collection")){
+            setFragment(new Collection());
         } else {
             setFragment(new SignIn());
         }
@@ -49,10 +54,23 @@ public class FragmentReplacerActivity extends AppCompatActivity {
         if (fragment instanceof Comment){
             String id = getIntent().getStringExtra("id");
             String uid = getIntent().getStringExtra("uid");
+            String currentUID = getIntent().getStringExtra("currentUID");
 
             Bundle bundle = new Bundle();
             bundle.putString("id", id);
             bundle.putString("uid", uid);
+            bundle.putString("currentUID", currentUID);
+            fragment.setArguments(bundle);
+        }
+        if (fragment instanceof Collection){
+            String collectionID = getIntent().getStringExtra("collectionID");
+            String collectionName = getIntent().getStringExtra("collectionName");
+            String collectionUID = getIntent().getStringExtra("collectionUID");
+
+            Bundle bundle = new Bundle();
+            bundle.putString("collectionID", collectionID);
+            bundle.putString("collectionName", collectionName);
+            bundle.putString("collectionUID", collectionUID);
             fragment.setArguments(bundle);
         }
 

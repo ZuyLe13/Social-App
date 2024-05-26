@@ -58,7 +58,7 @@ public class Home extends Fragment {
     private HomeAdapter adapter;
     private FirebaseUser user;
     private Parcelable recyclerViewState;
-    private int fixSize = 0;
+    static public int fixSize = 0;
 
     public Home(){
 

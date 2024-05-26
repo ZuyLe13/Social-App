@@ -5,8 +5,11 @@ import static android.app.Activity.RESULT_OK;
 import static com.example.socialmediaapp.MainActivity.currentUid;
 import static com.example.socialmediaapp.MainActivity.isSearching;
 
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -20,13 +23,16 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -41,21 +47,28 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.socialmediaapp.MainActivity;
 import com.example.socialmediaapp.R;
+import com.example.socialmediaapp.adapter.CollectionAdapter;
+import com.example.socialmediaapp.model.CollectionModel;
+import com.example.socialmediaapp.model.HomeModel;
 import com.example.socialmediaapp.model.PostModel;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -66,6 +79,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,13 +91,20 @@ public class Profile extends Fragment{
 
     private TextView nameTV, toolbarNameTV, statusTV, followingCountTV, follwersCountTV;
     private CircleImageView profileImage;
-    private Button followBtn;
+    private Button followBtn, collectionAddBtn, shotsCountBtn, collectionsCountBtn;
     private RecyclerView recyclerView;
     private FirebaseUser user;
     private ImageButton editProfileBtn, settingBtn;
     private LinearLayout countLayout;
     private Boolean isMyProfile = true;
     FirestoreRecyclerAdapter<PostModel, PostHolder> adapter;
+    private CollectionAdapter collectionAdapter;
+    private List<CollectionModel> collectionList;
+    public static int collectionFixSize = 0;
+    private EditText ACNameET, ACDescriptionET;
+    private Context context;
+    private Boolean isCreating = true;
+
     String uid, PREF_URL, PREF_DIRECTORY, PREF_STORED;
     int PREF_NAME;
     public Profile(){
@@ -99,7 +121,6 @@ public class Profile extends Fragment{
         super.onViewCreated(view, savedInstanceState);
 
         init(view);
-        Log.d("TEST !!!", "current ID : " + currentUid);
         if (isSearching){
             uid = currentUid;
             isMyProfile = false;
@@ -117,16 +138,16 @@ public class Profile extends Fragment{
             countLayout.setVisibility(View.GONE);
             editProfileBtn.setVisibility(View.GONE);
             settingBtn.setVisibility(View.GONE);
+            shotsCountBtn.setVisibility(View.GONE);
+            collectionsCountBtn.setVisibility(View.GONE);
         }
 
         loadBasicData();
 
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
 
-        loadPost();
 
-        recyclerView.setAdapter(adapter);
+        loadPostData(view);
 
         editProfileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -138,6 +159,69 @@ public class Profile extends Fragment{
             }
         });
 
+        shotsCountBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                collectionAddBtn.setVisibility(View.GONE);
+                loadPostData(view);
+            }
+        });
+
+        collectionsCountBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                collectionAddBtn.setVisibility(View.VISIBLE);
+                loadCollectionData(view);
+            }
+        });
+
+        collectionAddBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LayoutInflater inflater = LayoutInflater.from(view.getContext());
+                View dialogView = inflater.inflate(R.layout.dialog_add_collection, null);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setView(dialogView)
+                        .setTitle("Add New Collection")
+                        .setPositiveButton("Create", null)
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
+
+                final AlertDialog dialog = builder.create();
+                dialog.show();
+
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ACNameET = dialogView.findViewById(R.id.dialogACNameET);
+                        ACDescriptionET = dialogView.findViewById(R.id.dialogACDescriptionET);
+                        String name = ACNameET.getText().toString().trim();
+                        String description = ACDescriptionET.getText().toString().trim();
+
+                        if (name.isEmpty()) {
+                            ACNameET.setError("Name is required");
+                            return;
+                        }
+
+                        createNewCollection(name, description);
+                        dialog.dismiss();
+                    }
+                });
+
+                dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(DialogInterface dialogInterface) {
+                        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.showSoftInput(dialogView.findViewById(R.id.dialogACNameET), InputMethodManager.SHOW_IMPLICIT);
+                    }
+                });
+            }
+        });
     }
 
     private void init(View view){
@@ -145,6 +229,8 @@ public class Profile extends Fragment{
         Toolbar toolbar = view.findViewById(R.id.toolbar);
         assert getActivity() != null;
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+
+        this.context = view.getContext();
 
         this.nameTV = view.findViewById(R.id.nameTv);
         this.statusTV = view.findViewById(R.id.statusTV);
@@ -157,6 +243,9 @@ public class Profile extends Fragment{
         this.countLayout = view.findViewById(R.id.countLayout);
         this.editProfileBtn = view.findViewById(R.id.edit_profileImage);
         this.settingBtn = view.findViewById(R.id.settingBtn);
+        this.shotsCountBtn = view.findViewById(R.id.shotsCountBtn);
+        this.collectionsCountBtn = view.findViewById(R.id.collectionsCountBtn);
+        this.collectionAddBtn = view.findViewById(R.id.collectionAddBtn);
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
@@ -178,14 +267,16 @@ public class Profile extends Fragment{
                     List<String> following = (List<String>)value.get("following");
                     List<String> followers = (List<String>)value.get("followers");
                     String profileURL = value.getString("profileImg");
+                    int collectionCount = value.getLong("collectionCount").intValue();
 
                     nameTV.setText(name);
                     toolbarNameTV.setText(name);
                     statusTV.setText(status);
                     followingCountTV.setText(String.valueOf(following.size()));
                     follwersCountTV.setText(String.valueOf(followers.size()));
+                    collectionsCountBtn.setText(String.valueOf(collectionCount) + " Collections");
 
-                    Glide.with(getContext().getApplicationContext())
+                    Glide.with(context.getApplicationContext())
                             .load(profileURL)
                             .placeholder(R.drawable.ic_avt)
                             .circleCrop()
@@ -216,7 +307,7 @@ public class Profile extends Fragment{
         });
     }
 
-    public void loadPost(){
+    public void loadPostData(View view){
 
         DocumentReference reference = FirebaseFirestore.getInstance().collection("Users").document(uid);
         Query query = reference.collection("Post Images");
@@ -238,9 +329,12 @@ public class Profile extends Fragment{
                         .timeout(6500)
                         .into(postHolder.profilePostImageView);
 
-
             }
         };
+
+        recyclerView.setLayoutManager(new GridLayoutManager(view.getContext(), 3));
+        recyclerView.setAdapter(adapter);
+        shotsCountBtn.setText(String.valueOf(adapter.getItemCount()) + " Posts");
     }
 
 
@@ -340,6 +434,84 @@ public class Profile extends Fragment{
         editor.putString(PREF_URL, url);
         editor.putString(PREF_DIRECTORY, directory.getAbsolutePath());
         editor.apply();
+    }
+
+    private void loadCollectionData(View view){
+        collectionList = new ArrayList<>();
+        collectionAdapter = new CollectionAdapter(collectionList, getActivity(), user.getUid(), "Profile", "", "", "", null, "");
+        recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        recyclerView.setAdapter(collectionAdapter);
+
+        FirebaseFirestore.getInstance()
+                .collection("Users").document(user.getUid())
+                .collection("Collections")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @SuppressLint("NotifyDataSetChanged")
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                        if (error != null){
+                            Log.e("Error: ", error.getMessage());
+                            return;
+                        }
+
+                        if (value == null) return;
+
+                        collectionList.clear();
+                        for (QueryDocumentSnapshot snapshot : value) {
+                            CollectionModel model = snapshot.toObject(CollectionModel.class);
+                            collectionList.add(model);
+                        }
+                        collectionAdapter.notifyDataSetChanged();
+                    }
+                });
+        collectionFixSize = collectionList.size();
+    }
+
+    private void createNewCollection(String name, String description) {
+        CollectionReference reference = FirebaseFirestore.getInstance()
+                .collection("Users")
+                .document(user.getUid())
+                .collection("Collections");
+        String collectionID = reference.document().getId();
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis() / 1000, 0);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", collectionID);
+        map.put("name", name);
+        map.put("description", description);
+        map.put("timestamp", timestamp);
+        map.put("postCount", 0);
+
+        reference.document(collectionID).set(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()){
+                    ACNameET.setText("");
+                    ACDescriptionET.setText("");
+//                    collectionList.add(new CollectionModel(collectionID, name, description, 0, timestamp.toDate()));
+                    DocumentReference document = FirebaseFirestore.getInstance().collection("Users").document(user.getUid());
+                    document.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if (task.isSuccessful()){
+                                if (task.getResult().exists()){
+                                    int collectionCount = task.getResult().getLong("collectionCount").intValue();
+                                    Map<String, Object> map = new HashMap<>();
+                                    map.put("collectionCount", collectionCount + 1);
+                                    document.update(map);
+                                    collectionFixSize += 1;
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        });
+        while (collectionList.size() != collectionFixSize){
+            Log.d("TEST !!!", "fix size: " + collectionFixSize);
+            Log.d("TEST !!!", "list size: " + collectionList.size());
+            collectionList.remove(0);
+        }
     }
 
     @Override

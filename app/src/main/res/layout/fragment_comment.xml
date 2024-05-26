@@ -6,10 +6,124 @@
     android:layout_height="match_parent"
     tools:context=".fragments.Comment">
 
+    <LinearLayout
+        android:id="@+id/itemPost"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:paddingTop="10dp"
+            android:orientation="horizontal">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/userAvt"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_marginStart="14dp"
+                android:layout_marginEnd="14dp"
+                android:src="@drawable/ic_avt"
+                android:layout_weight="1"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="6">
+
+                <TextView
+                    android:id="@+id/userName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/textNormal"
+                    android:src="@drawable/ic_avt"/>
+
+                <TextView
+                    android:id="@+id/timeStampTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/textSmall"
+                    android:src="@drawable/ic_avt"/>
+
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/AtoCBtn"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/ic_storage"
+                android:background="#fff"
+                android:layout_weight="1"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/desciptionTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="20dp"
+            android:paddingHorizontal="10dp"/>
+
+        <ImageView
+            android:id="@+id/postImageView"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:src="@drawable/post_img"
+            android:layout_marginTop="12dp"
+            android:background="#fff"
+            android:scaleType="centerCrop"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:layout_marginStart="20dp">
+
+                <TextView
+                    android:id="@+id/reactCountTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    style="@style/textSmall"/>
+
+                <ImageButton
+                    android:id="@+id/reactBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_heart"
+                    android:background="@color/white"/>
+
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/shareBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/ic_share"
+                android:background="#fff" />
+        </LinearLayout>
+    </LinearLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/commentDetailRV"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/itemPost"
+        android:layout_marginTop="10dp"
+        android:layout_above="@id/commentDetailLL"
         />
 
     <LinearLayout
