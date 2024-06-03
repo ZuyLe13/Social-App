@@ -188,6 +188,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeHolder> {
             reactBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+
                     onPressed.onReacted(position, id, uID, reacts, isChecked);
                 }
             });

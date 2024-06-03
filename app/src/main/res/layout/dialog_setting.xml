@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:background="@color/white">
+
+    <Button
+        android:id="@+id/logoutBtn"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:background="@drawable/ic_logout"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginVertical="2dp"
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/black"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="15dp"
+        />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Keep Silent"
+            android:textSize="16sp"
+            android:layout_marginVertical="2dp"
+            android:layout_gravity="center_horizontal"
+            />
+
+        <Switch
+            android:id="@+id/silentSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="2dp"
+            android:layout_gravity="center_horizontal"
+            />
+
+</LinearLayout>

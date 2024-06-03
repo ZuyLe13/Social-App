@@ -22,6 +22,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -92,12 +93,31 @@ public class Comment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState){
         super.onViewCreated(view, savedInstanceState);
 
+        // Cấu hình bàn phím mềm
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+
         init(view);
         loadDataFromFireStore();
     }
 
     private void init(View view){
         commentET = view.findViewById(R.id.commentDetailET);
+
+        commentET.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    v.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.showSoftInput(v, InputMethodManager.SHOW_IMPLICIT);
+                        }
+                    });
+                }
+            }
+        });
+
         commentSendBtn = view.findViewById(R.id.commentDetailSendBtn);
         commentRV = view.findViewById(R.id.commentDetailRV);
 
@@ -189,8 +209,28 @@ public class Comment extends Fragment {
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 if (error != null || value == null) return;
 
+                commentList.clear();
                 for (QueryDocumentSnapshot snapshot: value){
                     CommentModel model = snapshot.toObject(CommentModel.class);
+                    FirebaseFirestore.getInstance().collection("Users").document(model.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if (task.isSuccessful() && task.getResult() != null) {
+                                DocumentSnapshot commentUserValue = task.getResult();
+                                if (commentUserValue.exists()) {
+                                    String profileImg = commentUserValue.getString("profileImg");
+                                    String name = commentUserValue.getString("name");
+                                    Map<String, Object> map = new HashMap<>();
+                                    map.put("avt", profileImg);
+                                    map.put("name", name);
+                                    reference.document(model.getId()).update(map);
+                                    model.setAvt(profileImg);
+                                    model.setName(name);
+                                }
+                            }
+                        }
+                    });
+
                     commentList.add(model);
                 }
 
@@ -202,12 +242,6 @@ public class Comment extends Fragment {
     }
 
     private void setClickListener(String id, String name, String uID, String currentUID, List<String> reacts, int isChecked, String imageURL, Date timestamp){
-
-        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-//                .setDisplayName(name)
-                .setPhotoUri(Uri.parse("https://toppng.com/uploads/preview/person-vector-11551054765wbvzeoxz2c.png"))
-                .build();
-        user.updateProfile(profileUpdates);
 
         commentSendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -225,7 +259,7 @@ public class Comment extends Fragment {
                 map.put("id", commentID);
                 map.put("comment", comment);
                 map.put("timestamp", new Timestamp(System.currentTimeMillis() / 1000, 0));
-                map.put("name", currentUID);
+                map.put("name", user.getDisplayName().toString());
                 map.put("avt", user.getPhotoUrl().toString());
 
                 reference.document(commentID).set(map).addOnCompleteListener(new OnCompleteListener<Void>() {

@@ -25,15 +25,17 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder>{
 
     private List<UserModel> userModelList;
     private OnProfileChosen onProfileChosen;
+    private int layoutID;
 
-    public UserAdapter(List<UserModel> userModelList) {
+    public UserAdapter(List<UserModel> userModelList, int layoutID) {
         this.userModelList = userModelList;
+        this.layoutID = layoutID;
     }
 
     @NonNull
     @Override
     public UserHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_search_user, parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(this.layoutID, parent,false);
         return new UserHolder(view);
     }
 
@@ -80,6 +82,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserHolder>{
             searchNameTV = itemView.findViewById(R.id.searchNameTV);
             searchStatusTV = itemView.findViewById(R.id.searchStatusTV);
             searchRL = itemView.findViewById(R.id.searchRL);
+            searchNameTV.setSelected(true);
+            searchStatusTV.setSelected(true);
         }
 
     }

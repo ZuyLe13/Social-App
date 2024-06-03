@@ -76,6 +76,7 @@ public class Home extends Fragment {
 
         init(view);
 
+        fixSize = 0;
         postList = new ArrayList<>();
         adapter = new HomeAdapter(postList, getActivity());
         postRecycleView.setAdapter(adapter);
@@ -86,9 +87,10 @@ public class Home extends Fragment {
             @Override
             public void onReacted(int position, String id, String uID, List<String> reacts, int isChecked) {
 
+
                 DocumentReference documentReference = FirebaseFirestore.getInstance()
                         .collection("Users")
-                        .document(user.getUid())
+                        .document(uID)
                         .collection("Post Images")
                         .document(id);
 
@@ -152,7 +154,6 @@ public class Home extends Fragment {
                 .document(user.getUid());
         final CollectionReference collectionReference = FirebaseFirestore.getInstance().collection("Users");
 
-        final int[] i = {0};
         reference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
