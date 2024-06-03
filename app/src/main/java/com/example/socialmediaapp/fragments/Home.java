@@ -110,8 +110,8 @@ public class Home extends Fragment {
         }
 
         CollectionReference reference = FirebaseFirestore.getInstance().collection("Users")
-                        .document(user.getUid())
-                                .collection("Post Images");
+                .document(user.getUid())
+                .collection("Post Images");
         reference.addSnapshotListener(new EventListener<QuerySnapshot>(){
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {

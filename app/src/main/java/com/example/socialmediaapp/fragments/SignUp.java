@@ -141,21 +141,21 @@ public class SignUp extends Fragment {
                         if (task.isSuccessful()){
                             FirebaseUser user = auth.getCurrentUser();
                             user.sendEmailVerification()
-                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<Void> task) {
-                                                    if (task.isSuccessful()){
-                                                        Toast.makeText(getContext(),"Email verification link has been sent", Toast.LENGTH_SHORT).show();
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()){
+                                                Toast.makeText(getContext(),"Email verification link has been sent", Toast.LENGTH_SHORT).show();
 
-                                                        uploadUser(user,phone,name,email);
-                                                        Toast.makeText(getContext(),"Sign up successful", Toast.LENGTH_SHORT).show();
-                                                    }
-                                                    else{
-                                                        Toast.makeText(getContext(),"Can not send email verification link", Toast.LENGTH_SHORT).show();
+                                                uploadUser(user,phone,name,email);
+                                                Toast.makeText(getContext(),"Sign up successful", Toast.LENGTH_SHORT).show();
+                                            }
+                                            else{
+                                                Toast.makeText(getContext(),"Can not send email verification link", Toast.LENGTH_SHORT).show();
 
-                                                    }
-                                                }
-                                            });
+                                            }
+                                        }
+                                    });
 
 
 

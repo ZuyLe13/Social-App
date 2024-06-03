@@ -1,5 +1,6 @@
 package com.example.socialmediaapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,8 +14,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.FrameLayout;
 
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -37,6 +40,8 @@ public class MainActivity extends AppCompatActivity implements Search.OnDataPass
     public static Boolean isSearching = false;
     public static String MyName;
 
+    private ImageButton messageBtn;
+
     public MainActivity(){}
 
     @Override
@@ -46,6 +51,8 @@ public class MainActivity extends AppCompatActivity implements Search.OnDataPass
 
         bottomNavView = findViewById(R.id.bottomNavView);
         frameLayout = findViewById(R.id.frameLayout);
+
+        messageBtn = findViewById(R.id.messageBtn);
 
         bottomNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -71,6 +78,13 @@ public class MainActivity extends AppCompatActivity implements Search.OnDataPass
 
         loadFragment(new Home(), true);
 
+        messageBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ChatUserActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void loadFragment(Fragment frag, boolean isAppInitialized) {

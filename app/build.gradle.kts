@@ -98,4 +98,5 @@ dependencies {
     implementation("com.facebook.android:facebook-android-sdk:[4,5)")
 
     api ("com.theartofdev.edmodo:android-image-cropper:2.8.+")
+
 }
