@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="6dp">
+    android:padding="6dp"
+    android:orientation="vertical"
+    android:gravity="center_horizontal">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/searchProfileImageCIV"
@@ -22,9 +24,16 @@
         android:text="Username"
         android:textStyle="bold"
         android:textSize="18dp"
-        android:layout_toRightOf="@id/searchProfileImageCIV"
-        android:layout_toEndOf="@id/searchProfileImageCIV"
         android:padding="8dp"
+        android:textAlignment="center"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:maxLines="1"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:scrollHorizontally="true"
+        android:freezesText="true"
         />
 
     <TextView
@@ -34,10 +43,16 @@
         android:text="Status"
         android:textStyle="bold"
         android:textSize="18dp"
-        android:layout_toRightOf="@id/searchProfileImageCIV"
-        android:layout_toEndOf="@id/searchProfileImageCIV"
-        android:layout_below="@id/searchNameTV"
         android:paddingHorizontal="8dp"
+        android:textAlignment="center"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:maxLines="1"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:scrollHorizontally="true"
+        android:freezesText="true"
         />
 
-</RelativeLayout>
+</LinearLayout>

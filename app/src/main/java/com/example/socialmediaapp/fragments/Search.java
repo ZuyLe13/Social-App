@@ -81,7 +81,8 @@ public class Search extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         userModelList = new ArrayList<>();
-        userAdapter = new UserAdapter(userModelList);
+        int layoutID = R.layout.item_search_user;
+        userAdapter = new UserAdapter(userModelList, layoutID);
         recyclerView.setAdapter(userAdapter);
     }
 

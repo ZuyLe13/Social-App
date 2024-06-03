@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_margin="2dp">
+    <TextView
+        android:id="@+id/CPNameTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="name"
+        android:padding="5dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginHorizontal="30dp"
+        android:layout_centerVertical="true"
+        />
+
+    <ImageView
+        android:id="@+id/CPImageIV"
+        android:layout_width="60dp"
+        android:layout_height="40dp"
+        android:layout_margin="5dp"
+        android:layout_toEndOf="@id/CPNameTV"
+        android:src="@drawable/post_img"
+        android:layout_centerVertical="true"
+        />
+
+    <TextView
+        android:id="@+id/CPTimeTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="time"
+        android:padding="5dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_toEndOf="@id/CPImageIV"
+        android:layout_centerVertical="true"
+        />
+
+    <ImageButton
+        android:id="@+id/CPDetailBtn"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/search_ic"
+        android:background="@drawable/ic_circle"
+        android:padding="5dp"
+        android:layout_marginEnd="20dp"
+        android:layout_toStartOf="@id/CPDeleteBtn"
+        android:layout_centerVertical="true"
+        />
+
+    <ImageButton
+        android:id="@+id/CPDeleteBtn"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_trash"
+        android:background="@drawable/ic_circle"
+        android:padding="5dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="30dp"
+        android:layout_centerVertical="true"
+        />
+
+</RelativeLayout>

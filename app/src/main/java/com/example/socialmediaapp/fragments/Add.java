@@ -2,8 +2,6 @@ package com.example.socialmediaapp.fragments;
 
 import static android.app.Activity.RESULT_OK;
 import static com.example.socialmediaapp.MainActivity.MyName;
-import static com.example.socialmediaapp.utils.ImageContent.loadSavedImages;
-
 import android.Manifest;
 import android.app.Dialog;
 import android.content.Intent;
@@ -178,7 +176,7 @@ public class Add extends Fragment {
 
         String id = reference.document().getId();
         String description = postDescriptionEditText.getText().toString();
-        List<String> reactList = new ArrayList<>();
+        List<String> reacts = new ArrayList<>();
 
         Map<String, Object> map = new HashMap<>();
         map.put("id", id);
@@ -188,8 +186,8 @@ public class Add extends Fragment {
 
         map.put("name", MyName);
         map.put("profileImage", String.valueOf(user.getPhotoUrl()));
-        map.put("reacts", reactList);
-        map.put("comments", "");
+        map.put("reacts", reacts);
+        map.put("commentCount", 0);
         map.put("uid", user.getUid());
 
         reference.document(id).set(map)
