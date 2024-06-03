@@ -209,7 +209,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeHolder> {
                     intent.putExtra("FragmentType", "Comment");
 
                     context.startActivity(intent);
-                    while (list.size() != fixSize){
+                    while (list.size() > fixSize){
                         list.remove(0);
                     }
                 }

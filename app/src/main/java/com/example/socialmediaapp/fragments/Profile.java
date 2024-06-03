@@ -102,6 +102,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -566,7 +568,7 @@ public class Profile extends Fragment{
                 Map<String, Object> map = new HashMap<>();
                 map.put("reacts", reacts);
                 documentReference.update(map);
-                while (myPostList.size() != fixSize){
+                while (myPostList.size() > fixSize){
                     myPostList.remove(0);
                 }
             }
@@ -601,10 +603,16 @@ public class Profile extends Fragment{
                     Log.d("TEST !!!", "my post size " + myPostList.size());
                     shotsCountBtn.setText(String.valueOf(myPostList.size()) + " Posts");
                 }
+                Collections.sort(myPostList, new Comparator<HomeModel>() {
+                    @Override
+                    public int compare(HomeModel o1, HomeModel o2) {
+                        return o2.getTimeStamp().compareTo(o1.getTimeStamp());
+                    }
+                });
                 myPostAdapter.notifyDataSetChanged();
             }
         });
-        while (myPostList.size() != fixSize){
+        while (myPostList.size() > fixSize){
             myPostList.remove(0);
         }
 
