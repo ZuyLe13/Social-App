@@ -284,13 +284,6 @@ public class Profile extends Fragment{
             }
         });
 
-
-        if (myfollowing.contains(uid)){
-            followBtn.setText("Unfollow");
-            isFollowed = true;
-        }else{
-            isFollowed = false;
-        }
         followBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -439,8 +432,8 @@ public class Profile extends Fragment{
                 if (value.exists()){
                     String name = value.getString("name");
                     String status = value.getString("status");
-                    following = (List<String>)value.get("following");
-                    followers = (List<String>)value.get("followers");
+                    following = value.contains("following") ? (List<String>) value.get("following") : new ArrayList<>();
+                    followers = value.contains("followers") ? (List<String>) value.get("followers") : new ArrayList<>();
                     String profileURL = value.getString("profileImg");
                     imageURI = profileURL;
                     int collectionCount = value.getLong("collectionCount").intValue();
@@ -478,6 +471,9 @@ public class Profile extends Fragment{
                             .setPhotoUri(Uri.parse(profileURL))
                             .build();
                     user.updateProfile(profileUpdates);
+
+                    Log.d("TEST !!!", "userfollwing size " + following.size());
+                    Log.d("TEST !!!", "userfollwers size " + followers.size());
                 }
             }
         });
@@ -491,8 +487,20 @@ public class Profile extends Fragment{
                 }
                 if (value == null || !value.exists()) return;
 
-                myfollowing = (List<String>)value.get("following");
-                myfollowers = (List<String>)value.get("followers");
+                myfollowing = value.contains("following") ? (List<String>) value.get("following") : new ArrayList<>();
+                myfollowers = value.contains("followers") ? (List<String>) value.get("followers") : new ArrayList<>();
+
+                if (myfollowing.contains(uid)){
+                    followBtn.setText("Unfollow");
+                    isFollowed = true;
+                }else{
+                    isFollowed = false;
+                }
+
+                Log.d("TEST !!!", "myfollwing size " + myfollowing.size());
+                Log.d("TEST !!!", "myfollwers size " + myfollowers.size());
+
+
             }
         });
 
