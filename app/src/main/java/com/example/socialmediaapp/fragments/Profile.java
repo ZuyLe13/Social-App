@@ -102,6 +102,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -120,7 +122,7 @@ public class Profile extends Fragment{
     private ImageButton editProfileBtn, settingBtn, acceptBtn, denyBtn;
     private LinearLayout countLayout, addfr_followLL;
     private Boolean isMyProfile = true;
-//    FirestoreRecyclerAdapter<PostModel, PostHolder> adapter;
+    //    FirestoreRecyclerAdapter<PostModel, PostHolder> adapter;
     private CollectionAdapter collectionAdapter;
     private List<CollectionModel> collectionList;
     public static int collectionFixSize = 0;
@@ -549,28 +551,67 @@ public class Profile extends Fragment{
 
         myPostAdapter.OnPressed(new HomeAdapter.OnPressed() {
             @Override
-            public void onReacted(int position, String id, String uID, List<String> reacts, int isChecked) {
+            public void onReacted(int position, String id, String uID, List<String> likes, List<String> hahas, List<String> sads, List<String> wows, List<String> angrys, int isChecked, int previousEmotion) {
 
-                DocumentReference documentReference = FirebaseFirestore.getInstance()
-                        .collection("Users")
-                        .document(uid)
-                        .collection("Post Images")
-                        .document(id);
+                if (previousEmotion != isChecked) {
+                    DocumentReference documentReference = FirebaseFirestore.getInstance()
+                            .collection("Users")
+                            .document(uid)
+                            .collection("Post Images")
+                            .document(id);
+                    Map<String, Object> map = new HashMap<>();
 
-                if (reacts.contains(user.getUid())){
-                    reacts.remove(user.getUid());
-                } else {
-                    reacts.add(user.getUid());
-                }
+                    switch (previousEmotion) {
+                        case 1:
+                            likes.remove(user.getUid());
+                            map.put("likes", likes);
+                            break;
+                        case 2:
+                            hahas.remove(user.getUid());
+                            map.put("hahas", hahas);
+                            break;
+                        case 3:
+                            sads.remove(user.getUid());
+                            map.put("sads", sads);
+                            break;
+                        case 4:
+                            wows.remove(user.getUid());
+                            map.put("wows", wows);
+                            break;
+                        case 5:
+                            angrys.remove(user.getUid());
+                            map.put("angrys", angrys);
+                            break;
+                    }
 
-                Map<String, Object> map = new HashMap<>();
-                map.put("reacts", reacts);
-                documentReference.update(map);
-                while (myPostList.size() != fixSize){
-                    myPostList.remove(0);
+                    switch (isChecked) {
+                        case 1:
+                            likes.add(user.getUid());
+                            map.put("likes", likes);
+                            break;
+                        case 2:
+                            hahas.add(user.getUid());
+                            map.put("hahas", hahas);
+                            break;
+                        case 3:
+                            sads.add(user.getUid());
+                            map.put("sads", sads);
+                            break;
+                        case 4:
+                            wows.add(user.getUid());
+                            map.put("wows", wows);
+                            break;
+                        case 5:
+                            angrys.add(user.getUid());
+                            map.put("angrys", angrys);
+                            break;
+                    }
+                    documentReference.update(map);
+                    while (myPostList.size() > fixSize) {
+                        myPostList.remove(0);
+                    }
                 }
             }
-
         });
 
         userRef.collection("Post Images").addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -594,17 +635,27 @@ public class Profile extends Fragment{
                             model.getUid(),
                             model.getDescription(),
                             model.getId(),
-                            model.getReacts(),
+                            model.getLikes(),
+                            model.getHahas(),
+                            model.getSads(),
+                            model.getWows(),
+                            model.getAngrys(),
                             model.getTimeStamp(),
                             model.getCommentCount()
                     ));
                     Log.d("TEST !!!", "my post size " + myPostList.size());
                     shotsCountBtn.setText(String.valueOf(myPostList.size()) + " Posts");
                 }
+                Collections.sort(myPostList, new Comparator<HomeModel>() {
+                    @Override
+                    public int compare(HomeModel o1, HomeModel o2) {
+                        return o2.getTimeStamp().compareTo(o1.getTimeStamp());
+                    }
+                });
                 myPostAdapter.notifyDataSetChanged();
             }
         });
-        while (myPostList.size() != fixSize){
+        while (myPostList.size() > fixSize){
             myPostList.remove(0);
         }
 
@@ -645,7 +696,7 @@ public class Profile extends Fragment{
 //        }
 //    }
 
-//    @Override
+    //    @Override
 //    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data){
 //        super.onActivityResult(requestCode, resultCode, data);
 //
@@ -677,15 +728,15 @@ public class Profile extends Fragment{
 
                                             user.updateProfile(request.build());
                                             myRef.update(map).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                        @Override
-                                                        public void onComplete(@NonNull Task<Void> task) {
-                                                            if (task.isSuccessful()){
-                                                                Toast.makeText(getContext(), "Update Successfully !", Toast.LENGTH_SHORT).show();
-                                                            } else {
-                                                                Toast.makeText(getContext(), "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                                                            }
-                                                        }
-                                                    });
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    if (task.isSuccessful()){
+                                                        Toast.makeText(getContext(), "Update Successfully !", Toast.LENGTH_SHORT).show();
+                                                    } else {
+                                                        Toast.makeText(getContext(), "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                                    }
+                                                }
+                                            });
 
                                             Map<String, Object> map2 = new HashMap<>();
                                             map2.put("profileImage", imageURL);

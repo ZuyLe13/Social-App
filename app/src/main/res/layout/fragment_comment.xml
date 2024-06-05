@@ -96,14 +96,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="10dp"
-                    style="@style/textSmall"/>
+                    style="@style/textSmall"
+                    />
 
                 <ImageButton
                     android:id="@+id/reactBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_heart"
-                    android:background="@color/white"/>
+                    android:background="@drawable/ic_react_like"
+                />
 
             </LinearLayout>
 
