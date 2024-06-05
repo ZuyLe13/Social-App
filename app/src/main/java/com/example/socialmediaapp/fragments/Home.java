@@ -9,6 +9,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -70,7 +71,7 @@ public class Home extends Fragment {
     private Boolean hadLoaded = false;
     private int popularFixSize = 0, trendingFixSize = 0, followingFixSize = 0;
 
-    public Home(){
+    public Home() {
 
     }
 
@@ -81,7 +82,7 @@ public class Home extends Fragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle saveInstanceState){
+    public void onViewCreated(@NonNull View view, @Nullable Bundle saveInstanceState) {
         super.onViewCreated(view, saveInstanceState);
 
         init(view);
@@ -120,7 +121,7 @@ public class Home extends Fragment {
         hadLoaded = true;
     }
 
-    private void init(View view){
+    private void init(View view) {
         postRecycleView = view.findViewById(R.id.postRecycleView);
         postRecycleView.setHasFixedSize(true);
         postRecycleView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -153,29 +154,69 @@ public class Home extends Fragment {
                 });
     }
 
-    private void resetAdapter(List<HomeModel> postList, HomeAdapter adapter, String type){
+    private void resetAdapter(List<HomeModel> postList, HomeAdapter adapter, String type) {
         fixSize = 0;
         postList.clear();
         postRecycleView.setAdapter(adapter);
         adapter.OnPressed(new HomeAdapter.OnPressed() {
             @Override
-            public void onReacted(int position, String id, String uID, List<String> reacts, int isChecked) {
+            public void onReacted(int position, String id, String uID, List<String> likes, List<String> hahas, List<String> sads, List<String> wows, List<String> angrys, int isChecked, int previousEmotion) {
 
-                DocumentReference documentReference = FirebaseFirestore.getInstance()
-                        .collection("Users")
-                        .document(uID)
-                        .collection("Post Images")
-                        .document(id);
+                if (previousEmotion != isChecked) {
+                    DocumentReference documentReference = FirebaseFirestore.getInstance()
+                            .collection("Users")
+                            .document(uID)
+                            .collection("Post Images")
+                            .document(id);
+                    Map<String, Object> map = new HashMap<>();
 
-                if (reacts.contains(user.getUid())){
-                    reacts.remove(user.getUid());
-                } else {
-                    reacts.add(user.getUid());
+                    switch (previousEmotion) {
+                        case 1:
+                            likes.remove(user.getUid());
+                            map.put("likes", likes);
+                            break;
+                        case 2:
+                            hahas.remove(user.getUid());
+                            map.put("hahas", hahas);
+                            break;
+                        case 3:
+                            sads.remove(user.getUid());
+                            map.put("sads", sads);
+                            break;
+                        case 4:
+                            wows.remove(user.getUid());
+                            map.put("wows", wows);
+                            break;
+                        case 5:
+                            angrys.remove(user.getUid());
+                            map.put("angrys", angrys);
+                            break;
+                    }
+
+                    switch (isChecked) {
+                        case 1:
+                            likes.add(user.getUid());
+                            map.put("likes", likes);
+                            break;
+                        case 2:
+                            hahas.add(user.getUid());
+                            map.put("hahas", hahas);
+                            break;
+                        case 3:
+                            sads.add(user.getUid());
+                            map.put("sads", sads);
+                            break;
+                        case 4:
+                            wows.add(user.getUid());
+                            map.put("wows", wows);
+                            break;
+                        case 5:
+                            angrys.add(user.getUid());
+                            map.put("angrys", angrys);
+                            break;
+                    }
+                    documentReference.update(map);
                 }
-
-                Map<String, Object> map = new HashMap<>();
-                map.put("reacts", reacts);
-                documentReference.update(map);
 
 //                if (type.equals("popular")) loadPopularData();
 //                else if (type.equals("trending")) loadTrendingData();
@@ -185,7 +226,7 @@ public class Home extends Fragment {
         });
     }
 
-    private void loadFollowingData(){
+    private void loadFollowingData() {
         fixSize = followingFixSize;
         unregisterListeners();
         resetAdapter(followingPostList, followingAdapter, "following");
@@ -194,16 +235,16 @@ public class Home extends Fragment {
         followingListener = coRef.document(user.getUid()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                if (error != null){
+                if (error != null) {
                     Log.d("TEST !!!", "Error: " + error.getMessage());
                 }
 
-                if (value == null){
+                if (value == null) {
                     return;
                 }
 
                 MyName = value.getString("name");
-                List<String> following = (List<String>)value.get("following");
+                List<String> following = (List<String>) value.get("following");
 
                 if (following == null || following.isEmpty()) return;
 
@@ -214,13 +255,13 @@ public class Home extends Fragment {
                             @Override
                             public void onEvent(@Nullable QuerySnapshot value2, @Nullable FirebaseFirestoreException error) {
 
-                                if (error != null){
+                                if (error != null) {
                                     Log.e("Error: ", error.getMessage());
                                     return;
                                 }
                                 if (value2 == null) return;
 
-                                for (QueryDocumentSnapshot snapshot : value2){
+                                for (QueryDocumentSnapshot snapshot : value2) {
                                     if (!snapshot.exists()) return;
 
                                     snapshot.getReference().collection("Post Images")
@@ -228,7 +269,7 @@ public class Home extends Fragment {
                                                 @SuppressLint("NotifyDataSetChanged")
                                                 @Override
                                                 public void onEvent(@Nullable QuerySnapshot value3, @Nullable FirebaseFirestoreException error) {
-                                                    if (error != null){
+                                                    if (error != null) {
                                                         Log.e("Error: ", error.getMessage());
                                                         return;
                                                     }
@@ -244,7 +285,11 @@ public class Home extends Fragment {
                                                                 model.getUid(),
                                                                 model.getDescription(),
                                                                 model.getId(),
-                                                                model.getReacts(),
+                                                                model.getLikes(),
+                                                                model.getHahas(),
+                                                                model.getSads(),
+                                                                model.getWows(),
+                                                                model.getAngrys(),
                                                                 model.getTimeStamp(),
                                                                 model.getCommentCount()
                                                         ));
@@ -267,7 +312,7 @@ public class Home extends Fragment {
                                 }
                             }
                         });
-                while (followingPostList.size() > fixSize){
+                while (followingPostList.size() > fixSize) {
                     followingPostList.remove(0);
                 }
             }
@@ -275,14 +320,17 @@ public class Home extends Fragment {
 //        followingPostList = removeDuplicates(followingPostList);
     }
 
-    private void loadPopularData(){
+    private void loadPopularData() {
         fixSize = popularFixSize;
         unregisterListeners();
         resetAdapter(popularPostList, popularAdapter, "popular");
-        popularListener =  FirebaseFirestore.getInstance().collection("Users").addSnapshotListener(new EventListener<QuerySnapshot>() {
+        popularListener = FirebaseFirestore.getInstance().collection("Users").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                if (error != null) { Log.d("TEST !!!", "Error: " + error.getMessage()); return; }
+                if (error != null) {
+                    Log.d("TEST !!!", "Error: " + error.getMessage());
+                    return;
+                }
                 if (value == null) return;
 
                 popularPostList.clear();
@@ -293,7 +341,7 @@ public class Home extends Fragment {
                         @SuppressLint("NotifyDataSetChanged")
                         @Override
                         public void onEvent(@Nullable QuerySnapshot value3, @Nullable FirebaseFirestoreException error) {
-                            if (error != null){
+                            if (error != null) {
                                 Log.e("Error: ", error.getMessage());
                                 return;
                             }
@@ -309,7 +357,11 @@ public class Home extends Fragment {
                                         model.getUid(),
                                         model.getDescription(),
                                         model.getId(),
-                                        model.getReacts(),
+                                        model.getLikes(),
+                                        model.getHahas(),
+                                        model.getSads(),
+                                        model.getWows(),
+                                        model.getAngrys(),
                                         model.getTimeStamp(),
                                         model.getCommentCount()
                                 ));
@@ -329,7 +381,7 @@ public class Home extends Fragment {
                         }
                     });
                 }
-                while (popularPostList.size() > 6){
+                while (popularPostList.size() > 6) {
                     popularPostList.remove(0);
                 }
             }
@@ -337,14 +389,17 @@ public class Home extends Fragment {
 //        popularPostList = removeDuplicates(popularPostList);
     }
 
-    private void loadTrendingData(){
+    private void loadTrendingData() {
         fixSize = trendingFixSize;
         unregisterListeners();
         resetAdapter(trendingPostList, trendingAdapter, "trending");
         trendingListener = FirebaseFirestore.getInstance().collection("Users").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                if (error != null) { Log.d("TEST !!!", "Error: " + error.getMessage()); return; }
+                if (error != null) {
+                    Log.d("TEST !!!", "Error: " + error.getMessage());
+                    return;
+                }
                 if (value == null) return;
 
                 trendingPostList.clear();
@@ -354,7 +409,7 @@ public class Home extends Fragment {
                         @SuppressLint("NotifyDataSetChanged")
                         @Override
                         public void onEvent(@Nullable QuerySnapshot value3, @Nullable FirebaseFirestoreException error) {
-                            if (error != null){
+                            if (error != null) {
                                 Log.e("Error: ", error.getMessage());
                                 return;
                             }
@@ -370,7 +425,11 @@ public class Home extends Fragment {
                                         model.getUid(),
                                         model.getDescription(),
                                         model.getId(),
-                                        model.getReacts(),
+                                        model.getLikes(),
+                                        model.getHahas(),
+                                        model.getSads(),
+                                        model.getWows(),
+                                        model.getAngrys(),
                                         model.getTimeStamp(),
                                         model.getCommentCount()
                                 ));
@@ -378,7 +437,7 @@ public class Home extends Fragment {
                             Collections.sort(trendingPostList, new Comparator<HomeModel>() {
                                 @Override
                                 public int compare(HomeModel o1, HomeModel o2) {
-                                    return Integer.compare(o2.getReacts().size(), o1.getReacts().size());
+                                    return Integer.compare(o2.getLikes().size() + o2.getHahas().size() + o2.getSads().size() + o2.getWows().size() + o2.getAngrys().size(), o1.getLikes().size() + o1.getHahas().size() + o1.getSads().size() + o1.getWows().size() + o1.getAngrys().size());
                                 }
                             });
                             if (!hadLoaded)
@@ -390,7 +449,7 @@ public class Home extends Fragment {
                         }
                     });
                 }
-                while (trendingPostList.size() > fixSize){
+                while (trendingPostList.size() > fixSize) {
                     trendingPostList.remove(0);
                 }
             }
@@ -398,11 +457,12 @@ public class Home extends Fragment {
 //        trendingPostList = removeDuplicates(trendingPostList);
     }
 
-    public void setFocusBtnColor(Button button){
+    public void setFocusBtnColor(Button button) {
         button.setBackgroundColor(Color.parseColor("#F1F1FE"));
         button.setTextColor(Color.parseColor("#5151C6"));
     }
-    public void setNormalBtnColor(Button button){
+
+    public void setNormalBtnColor(Button button) {
         button.setBackgroundColor(Color.parseColor("#FFFFFF"));
         button.setTextColor(Color.parseColor("#BDBDBD"));
     }
@@ -435,7 +495,5 @@ public class Home extends Fragment {
             }
         }
     }
-
-
 
 }

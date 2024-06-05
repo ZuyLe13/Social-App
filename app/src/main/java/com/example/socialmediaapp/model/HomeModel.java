@@ -4,13 +4,14 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.ServerTimestamp;
 
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class HomeModel {
     private String name, profileImage, imageUrl, uid, description, id;
     private int commentCount;
-    private List<String> reacts;
+    private List<String> likes = new ArrayList<>(), hahas = new ArrayList<>(), sads = new ArrayList<>(), wows = new ArrayList<>(), angrys = new ArrayList<>();
     @ServerTimestamp
     private Date timeStamp;
 
@@ -18,14 +19,18 @@ public class HomeModel {
 
     }
 
-    public HomeModel(String name, String profileImage, String imageUrl, String uid, String description, String id, List<String> reacts, Date timeStamp, int commentCount) {
+    public HomeModel(String name, String profileImage, String imageUrl, String uid, String description, String id, List<String> likes, List<String> hahas, List<String> sads, List<String> wows, List<String> angrys, Date timeStamp, int commentCount) {
         this.name = name;
         this.profileImage = profileImage;
         this.imageUrl = imageUrl;
         this.uid = uid;
         this.description = description;
         this.id = id;
-        this.reacts = reacts;
+        this.likes = likes;
+        this.hahas = hahas;
+        this.sads = sads;
+        this.wows = wows;
+        this.angrys = angrys;
         this.timeStamp = timeStamp;
         this.commentCount = commentCount;
     }
@@ -79,12 +84,44 @@ public class HomeModel {
         this.id = id;
     }
 
-    public List<String> getReacts() {
-        return reacts;
+    public List<String> getLikes() {
+        return likes;
     }
 
-    public void setReacts(List<String> reacts) {
-        this.reacts = reacts;
+    public void setLikes(List<String> likes) {
+        this.likes = likes;
+    }
+
+    public List<String> getHahas() {
+        return hahas;
+    }
+
+    public void setHahas(List<String> hahas) {
+        this.hahas = hahas;
+    }
+
+    public List<String> getSads() {
+        return sads;
+    }
+
+    public void setSads(List<String> sads) {
+        this.sads = sads;
+    }
+
+    public List<String> getWows() {
+        return wows;
+    }
+
+    public void setWows(List<String> wows) {
+        this.wows = wows;
+    }
+
+    public List<String> getAngrys() {
+        return angrys;
+    }
+
+    public void setAngrys(List<String> angrys) {
+        this.angrys = angrys;
     }
 
     public Date getTimeStamp() {

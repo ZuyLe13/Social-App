@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@drawable/text_box">
+
+    <ImageView
+        android:id="@+id/emoji_1"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/ic_react_like_fill"
+        android:layout_marginHorizontal="10dp"
+        android:padding="4dp"
+        android:tag="like"
+        />
+
+    <ImageView
+        android:id="@+id/emoji_2"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/ic_react_haha"
+        android:layout_marginEnd="10dp"
+        android:tag="haha"
+        />
+
+    <ImageView
+        android:id="@+id/emoji_3"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/ic_react_sad"
+        android:layout_marginEnd="10dp"
+        android:tag="sad"
+        />
+
+    <ImageView
+        android:id="@+id/emoji_4"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/ic_react_wow"
+        android:layout_marginEnd="10dp"
+        android:tag="wow"
+        />
+
+    <ImageView
+        android:id="@+id/emoji_5"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/ic_react_angry"
+        android:layout_marginEnd="10dp"
+        android:tag="angry"
+        />
+
+</LinearLayout>

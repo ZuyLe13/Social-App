@@ -1,5 +1,6 @@
 package com.example.socialmediaapp.adapter;
 
+import static android.view.View.GONE;
 import static com.example.socialmediaapp.fragments.Home.fixSize;
 import static com.example.socialmediaapp.fragments.Profile.collectionFixSize;
 
@@ -11,21 +12,40 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Parcelable;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -51,8 +71,11 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -84,18 +107,42 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeHolder> {
         holder.userNameTV.setText(list.get(position).getName());
         holder.timeStampTV.setText("" + list.get(position).getTimeStamp());
 
-        List<String> reacts = list.get(position).getReacts();
-        if (reacts.size() == 0) {
+        List<String> likes = list.get(position).getLikes();
+        List<String> hahas = list.get(position).getHahas();
+        List<String> sads = list.get(position).getSads();
+        List<String> wows = list.get(position).getWows();
+        List<String> angrys = list.get(position).getAngrys();
+        int currentReact = 0, reactCount = 0;
+
+        holder.reactBtn.setBackgroundResource(R.drawable.ic_react_like);
+        Log.d("TEST !!!", "uid : " + user.getUid());
+        if (likes.contains(user.getUid())){
+            holder.reactBtn.setBackgroundResource(R.drawable.ic_react_like_fill);
+            currentReact = 1;
+            reactCount = likes.size();
+        } else if (hahas.contains(user.getUid())){
+            holder.reactBtn.setBackgroundResource(R.drawable.ic_react_haha);
+            currentReact = 2;
+            reactCount = hahas.size();
+        } else if (sads.contains(user.getUid())){
+            holder.reactBtn.setBackgroundResource(R.drawable.ic_react_sad);
+            currentReact = 3;
+            reactCount = sads.size();
+        } else if (wows.contains(user.getUid())){
+            holder.reactBtn.setBackgroundResource(R.drawable.ic_react_wow);
+            currentReact = 4;
+            reactCount = wows.size();
+        } else if (angrys.contains(user.getUid())){
+            holder.reactBtn.setBackgroundResource(R.drawable.ic_react_angry);
+            currentReact = 5;
+            reactCount = angrys.size();
+        }
+
+        if (reactCount == 0){
             holder.reactCountTV.setVisibility(View.GONE);
         } else {
             holder.reactCountTV.setVisibility(View.VISIBLE);
-            holder.reactCountTV.setText(String.valueOf(reacts.size()));
-        }
-
-        if (reacts.contains(user.getUid())){
-            holder.reactBtn.setImageResource(R.drawable.ic_heart_fill);
-        } else {
-            holder.reactBtn.setImageResource(R.drawable.ic_heart);
+            holder.reactCountTV.setText(String.valueOf(reactCount));
         }
 
         int commentCount =list.get(position).getCommentCount();
@@ -125,14 +172,19 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeHolder> {
                 .timeout(7000)
                 .into(holder.imageView);
 
+
         holder.clickListener(
                 position,
                 list.get(position).getId(),
                 list.get(position).getName(),
                 list.get(position).getUid(),
                 user.getUid(),
-                list.get(position).getReacts(),
-                reacts.contains(user.getUid()) ? 1 : 0,
+                likes,
+                hahas,
+                sads,
+                wows,
+                angrys,
+                currentReact,
                 list.get(position).getImageUrl(),
                 list.get(position).getTimeStamp()
         );
@@ -164,8 +216,13 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeHolder> {
         private ImageButton reactBtn, commentBtn, shareBtn, commentSendBtn, AtoCBtn;
         private EditText commentET;
         private LinearLayout commentLL;
+        private Handler handler;
+        private boolean isLongPress = false;
+        private Runnable longPressRunnable;
         public HomeHolder(@NonNull View itemView) {
             super(itemView);
+
+            handler = new Handler();
 
             profileImage = itemView.findViewById(R.id.userAvt);
             imageView = itemView.findViewById(R.id.postImageView);
@@ -184,12 +241,90 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeHolder> {
             AtoCBtn = itemView.findViewById(R.id.AtoCBtn);
         }
 
-        public void clickListener(int position, String id, String name, String uID, String currentUID, List<String> reacts, int isChecked, String imageURL, Date timestamp) {
-            reactBtn.setOnClickListener(new View.OnClickListener() {
+        public void clickListener(int position, String id, String name, String uID, String currentUID, List<String> likes, List<String> hahas, List<String> sads, List<String> wows, List<String> angrys, int isChecked, String imageURL, Date timestamp) {
+            reactBtn.setOnTouchListener(new View.OnTouchListener() {
                 @Override
-                public void onClick(View view) {
+                public boolean onTouch(View view, MotionEvent event) {
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            isLongPress = false;
+                            longPressRunnable = new Runnable() {
+                                @Override
+                                public void run() {
+                                    isLongPress = true;
+                                    LayoutInflater inflater = LayoutInflater.from(view.getContext());
+                                    View emojiView = inflater.inflate(R.layout.dialog_select_emotion, null);
 
-                    onPressed.onReacted(position, id, uID, reacts, isChecked);
+                                    final PopupWindow popupWindow = new PopupWindow(emojiView, WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT, true);
+                                    popupWindow.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#ffffff")));
+                                    popupWindow.setOutsideTouchable(true);
+
+                                    emojiView.findViewById(R.id.emoji_1).setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            reactBtn.setBackgroundResource(R.drawable.ic_react_like_fill);
+                                            onPressed.onReacted(position, id, uID, likes, hahas, sads, wows, angrys, 1, isChecked);
+                                            popupWindow.dismiss();
+                                        }
+                                    });
+
+                                    emojiView.findViewById(R.id.emoji_2).setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            reactBtn.setBackgroundResource(R.drawable.ic_react_haha);
+                                            onPressed.onReacted(position, id, uID, likes, hahas, sads, wows, angrys, 2, isChecked);
+                                            popupWindow.dismiss();
+                                        }
+                                    });
+
+                                    emojiView.findViewById(R.id.emoji_3).setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            reactBtn.setBackgroundResource(R.drawable.ic_react_sad);
+                                            onPressed.onReacted(position, id, uID, likes, hahas, sads, wows, angrys, 3, isChecked);
+                                            popupWindow.dismiss();
+                                        }
+                                    });
+
+                                    emojiView.findViewById(R.id.emoji_4).setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            reactBtn.setBackgroundResource(R.drawable.ic_react_wow);
+                                            onPressed.onReacted(position, id, uID, likes, hahas, sads, wows, angrys, 4, isChecked);
+                                            popupWindow.dismiss();
+                                        }
+                                    });
+
+                                    emojiView.findViewById(R.id.emoji_5).setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            reactBtn.setBackgroundResource(R.drawable.ic_react_angry);
+                                            onPressed.onReacted(position, id, uID, likes, hahas, sads, wows, angrys, 5, isChecked);
+                                            popupWindow.dismiss();
+                                        }
+                                    });
+
+                                    popupWindow.showAsDropDown(view);
+                                }
+                            };
+                            handler.postDelayed(longPressRunnable, 500); // Thời gian nhấn giữ để mở dialog
+                            return true;
+
+                        case MotionEvent.ACTION_UP:
+                            handler.removeCallbacks(longPressRunnable);
+                            if (!isLongPress) {
+//                                if (!reactBtn.getBackground().getConstantState().equals(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_react_like).getConstantState())) {
+                                if (isChecked != 0){
+                                    reactBtn.setBackgroundResource(R.drawable.ic_react_like);
+                                    onPressed.onReacted(position, id, uID, likes, hahas, sads, wows, angrys, 0, isChecked);
+                                } else {
+                                    reactBtn.setBackgroundResource(R.drawable.ic_react_like_fill);
+                                    onPressed.onReacted(position, id, uID, likes, hahas, sads, wows, angrys, 1, isChecked);
+                                }
+                            }
+                            return true;
+                    }
+                    return false;
                 }
             });
 
@@ -378,7 +513,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeHolder> {
 
 
     public interface OnPressed{
-        void onReacted (int position, String id, String uID, List<String> reacts, int isChecked);
+        void onReacted (int position, String id, String uID, List<String> likes, List<String> hahas, List<String> sads, List<String> wows, List<String> angrys, int isChecked, int previousEmotion);
 //        void onCommented(int position, String id, String uID, String comment, LinearLayout commentLL, EditText commentET);
     }
     public void OnPressed (OnPressed onPressed){
