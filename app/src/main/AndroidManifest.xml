@@ -40,7 +40,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ChatUserActivity"
+            android:name=".MessengerActivity"
             android:exported="false" />
         <activity
             android:name=".ChatActivity"

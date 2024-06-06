@@ -23,14 +23,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
+import com.example.socialmediaapp.FragmentReplacerActivity;
 import com.example.socialmediaapp.MainActivity;
+import com.example.socialmediaapp.MessengerActivity;
 import com.example.socialmediaapp.R;
+import com.example.socialmediaapp.SplashActivity;
 import com.example.socialmediaapp.adapter.HomeAdapter;
 import com.example.socialmediaapp.model.HomeModel;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -69,6 +73,9 @@ public class Home extends Fragment {
     private ListenerRegistration popularListener, trendingListener, followingListener;
     private Boolean hadLoaded = false;
     private int popularFixSize = 0, trendingFixSize = 0, followingFixSize = 0;
+
+    private ImageButton messageBtn;
+
 
     public Home(){
 
@@ -114,6 +121,15 @@ public class Home extends Fragment {
             }
         });
 
+        messageBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Chuyển sang MessengerActivity từ Fragment
+//                startActivity(new Intent(getActivity(), MessengerActivity.class));
+
+            }
+        });
+
         loadFollowingData();
         loadTrendingData();
         loadPopularData();
@@ -127,6 +143,8 @@ public class Home extends Fragment {
         popularBtn = view.findViewById(R.id.popularBtn);
         trendingBtn = view.findViewById(R.id.trendBtn);
         followingBtn = view.findViewById(R.id.followBtn);
+
+        messageBtn = view.findViewById(R.id.messageBtn);
 
 //        authTemp("21522605@gm.uit.edu.vn", "123456");
         FirebaseAuth auth = FirebaseAuth.getInstance();

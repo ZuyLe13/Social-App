@@ -30,8 +30,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.FrameLayout;
 
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -67,7 +69,6 @@ public class MainActivity extends AppCompatActivity implements Search.OnDataPass
     public static Boolean isSearching = false;
     public static String MyName;
 
-    private ImageButton messageBtn;
 
     public MainActivity(){}
 
@@ -78,6 +79,11 @@ public class MainActivity extends AppCompatActivity implements Search.OnDataPass
 
         bottomNavView = findViewById(R.id.bottomNavView);
         frameLayout = findViewById(R.id.frameLayout);
+
+
+
+
+
 
 //        FirebaseFirestore.getInstance().collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
 //            @Override
@@ -112,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements Search.OnDataPass
 //        Bitmap bitmap = loadProfileImage(directory);
 //        Drawable drawable = new BitmapDrawable(getResources(), bitmap);
 //        bottomNavView.getMenu().findItem(R.id.navProfile).setIcon(drawable);
+
 
         bottomNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
