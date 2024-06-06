@@ -8,6 +8,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,8 +19,10 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -28,6 +31,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -78,7 +82,10 @@ public class Comment extends Fragment {
     private TextView userNameTV, timeStampTV, reactCountTV, descriptionTV;
     private ImageView imageView;
     private ImageButton reactBtn, shareBtn, AtoCBtn;
-    private List<String> reacts;
+    private List<String> likes, hahas, sads, wows, angrys;
+    private Handler handler;
+    private boolean isLongPress = false;
+    private Runnable longPressRunnable;
     public Comment() {
 
     }
@@ -101,6 +108,9 @@ public class Comment extends Fragment {
     }
 
     private void init(View view){
+
+        handler = new Handler();
+
         commentET = view.findViewById(R.id.commentDetailET);
 
         commentET.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -158,17 +168,41 @@ public class Comment extends Fragment {
                         timeStampTV.setText(model.getTimeStamp().toString());
                         descriptionTV.setText(model.getDescription());
 
-                        reacts = model.getReacts();
-                        if (reacts.size() == 0) {
+                        likes = model.getLikes();
+                        hahas = model.getHahas();
+                        sads = model.getSads();
+                        wows = model.getWows();
+                        angrys = model.getAngrys();
+                        int currentReact = 0, reactCount = 0;
+
+                        reactBtn.setBackgroundResource(R.drawable.ic_react_like);
+                        if (likes.contains(user.getUid())){
+                            reactBtn.setBackgroundResource(R.drawable.ic_react_like_fill);
+                            currentReact = 1;
+                            reactCount = likes.size();
+                        } else if (hahas.contains(user.getUid())){
+                            reactBtn.setBackgroundResource(R.drawable.ic_react_haha);
+                            currentReact = 2;
+                            reactCount = hahas.size();
+                        } else if (sads.contains(user.getUid())){
+                            reactBtn.setBackgroundResource(R.drawable.ic_react_sad);
+                            currentReact = 3;
+                            reactCount = sads.size();
+                        } else if (wows.contains(user.getUid())){
+                            reactBtn.setBackgroundResource(R.drawable.ic_react_wow);
+                            currentReact = 4;
+                            reactCount = wows.size();
+                        } else if (angrys.contains(user.getUid())){
+                            reactBtn.setBackgroundResource(R.drawable.ic_react_angry);
+                            currentReact = 5;
+                            reactCount = angrys.size();
+                        }
+
+                        if (reactCount == 0){
                             reactCountTV.setVisibility(View.GONE);
                         } else {
                             reactCountTV.setVisibility(View.VISIBLE);
-                            reactCountTV.setText(String.valueOf(reacts.size()));
-                        }
-                        if (reacts.contains(currentUID)){
-                            reactBtn.setImageResource(R.drawable.ic_heart_fill);
-                        } else {
-                            reactBtn.setImageResource(R.drawable.ic_heart);
+                            reactCountTV.setText(String.valueOf(reactCount));
                         }
 
                         Glide.with(view.getContext().getApplicationContext())
@@ -187,8 +221,12 @@ public class Comment extends Fragment {
                                 model.getName(),
                                 model.getUid(),
                                 currentUID,
-                                model.getReacts(),
-                                reacts.contains(currentUID) ? 1 : 0,
+                                likes,
+                                hahas,
+                                sads,
+                                wows,
+                                angrys,
+                                currentReact,
                                 model.getImageUrl(),
                                 model.getTimeStamp()
                         );
@@ -241,7 +279,7 @@ public class Comment extends Fragment {
         fixSize = commentList.size();
     }
 
-    private void setClickListener(String id, String name, String uID, String currentUID, List<String> reacts, int isChecked, String imageURL, Date timestamp){
+    private void setClickListener(String id, String name, String uID, String currentUID, List<String> likes, List<String> hahas, List<String> sads, List<String> wows, List<String> angrys, int isChecked, String imageURL, Date timestamp){
 
         commentSendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -295,32 +333,89 @@ public class Comment extends Fragment {
             }
         });
 
-        reactBtn.setOnClickListener(new View.OnClickListener() {
+        reactBtn.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View view) {
-                DocumentReference documentReference = FirebaseFirestore.getInstance()
-                        .collection("Users")
-                        .document(uID)
-                        .collection("Post Images")
-                        .document(id);
+            public boolean onTouch(View view, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        isLongPress = false;
+                        longPressRunnable = new Runnable() {
+                            @Override
+                            public void run() {
+                                isLongPress = true;
+                                LayoutInflater inflater = LayoutInflater.from(view.getContext());
+                                View emojiView = inflater.inflate(R.layout.dialog_select_emotion, null);
 
-                if (reacts.contains(currentUID)){
-                    reacts.remove(currentUID);
-                    reactBtn.setImageResource(R.drawable.ic_heart);
-                } else {
-                    reacts.add(currentUID);
-                    reactBtn.setImageResource(R.drawable.ic_heart_fill);
-                }
-                if (reacts.size() == 0) {
-                    reactCountTV.setVisibility(View.GONE);
-                } else {
-                    reactCountTV.setVisibility(View.VISIBLE);
-                    reactCountTV.setText(String.valueOf(reacts.size()));
-                }
+                                final PopupWindow popupWindow = new PopupWindow(emojiView, WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT, true);
+                                popupWindow.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#ffffff")));
+                                popupWindow.setOutsideTouchable(true);
 
-                Map<String, Object> map = new HashMap<>();
-                map.put("reacts", reacts);
-                documentReference.update(map);
+                                emojiView.findViewById(R.id.emoji_1).setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        reactBtn.setBackgroundResource(R.drawable.ic_react_like_fill);
+                                        onReacted(id, uID, likes, hahas, sads, wows, angrys, 1, isChecked);
+                                        popupWindow.dismiss();
+                                    }
+                                });
+
+                                emojiView.findViewById(R.id.emoji_2).setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        reactBtn.setBackgroundResource(R.drawable.ic_react_haha);
+                                        onReacted(id, uID, likes, hahas, sads, wows, angrys, 2, isChecked);
+                                        popupWindow.dismiss();
+                                    }
+                                });
+
+                                emojiView.findViewById(R.id.emoji_3).setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        reactBtn.setBackgroundResource(R.drawable.ic_react_sad);
+                                        onReacted(id, uID, likes, hahas, sads, wows, angrys, 3, isChecked);
+                                        popupWindow.dismiss();
+                                    }
+                                });
+
+                                emojiView.findViewById(R.id.emoji_4).setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        reactBtn.setBackgroundResource(R.drawable.ic_react_wow);
+                                        onReacted(id, uID, likes, hahas, sads, wows, angrys, 4, isChecked);
+                                        popupWindow.dismiss();
+                                    }
+                                });
+
+                                emojiView.findViewById(R.id.emoji_5).setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        reactBtn.setBackgroundResource(R.drawable.ic_react_angry);
+                                        onReacted(id, uID, likes, hahas, sads, wows, angrys, 5, isChecked);
+                                        popupWindow.dismiss();
+                                    }
+                                });
+
+                                popupWindow.showAsDropDown(view);
+                            }
+                        };
+                        handler.postDelayed(longPressRunnable, 500); // Thời gian nhấn giữ để mở dialog
+                        return true;
+
+                    case MotionEvent.ACTION_UP:
+                        handler.removeCallbacks(longPressRunnable);
+                        if (!isLongPress) {
+//                                if (!reactBtn.getBackground().getConstantState().equals(ContextCompat.getDrawable(view.getContext(), R.drawable.ic_react_like).getConstantState())) {
+                            if (isChecked != 0){
+                                reactBtn.setBackgroundResource(R.drawable.ic_react_like);
+                                onReacted(id, uID, likes, hahas, sads, wows, angrys, 0, isChecked);
+                            } else {
+                                reactBtn.setBackgroundResource(R.drawable.ic_react_like_fill);
+                                onReacted(id, uID, likes, hahas, sads, wows, angrys, 1, isChecked);
+                            }
+                        }
+                        return true;
+                }
+                return false;
             }
         });
 
@@ -432,7 +527,63 @@ public class Comment extends Fragment {
 
     }
 
+    private void onReacted(String id, String uID, List<String> likes, List<String> hahas, List<String> sads, List<String> wows, List<String> angrys, int isChecked, int previousEmotion){
+        if (previousEmotion != isChecked){
+            DocumentReference documentReference = FirebaseFirestore.getInstance()
+                    .collection("Users")
+                    .document(uID)
+                    .collection("Post Images")
+                    .document(id);
+            Map<String, Object> map = new HashMap<>();
 
+            switch (previousEmotion){
+                case 1:
+                    likes.remove(user.getUid());
+                    map.put("likes", likes);
+                    break;
+                case 2:
+                    hahas.remove(user.getUid());
+                    map.put("hahas", hahas);
+                    break;
+                case 3:
+                    sads.remove(user.getUid());
+                    map.put("sads", sads);
+                    break;
+                case 4:
+                    wows.remove(user.getUid());
+                    map.put("wows", wows);
+                    break;
+                case 5:
+                    angrys.remove(user.getUid());
+                    map.put("angrys", angrys);
+                    break;
+            }
+
+            switch (isChecked){
+                case 1:
+                    likes.add(user.getUid());
+                    map.put("likes", likes);
+                    break;
+                case 2:
+                    hahas.add(user.getUid());
+                    map.put("hahas", hahas);
+                    break;
+                case 3:
+                    sads.add(user.getUid());
+                    map.put("sads", sads);
+                    break;
+                case 4:
+                    wows.add(user.getUid());
+                    map.put("wows", wows);
+                    break;
+                case 5:
+                    angrys.add(user.getUid());
+                    map.put("angrys", angrys);
+                    break;
+            }
+            documentReference.update(map);
+        }
+    }
 
     private void createNewCollection(View view, String name, String description, String currentUID, List<CollectionModel> collectionList) {
         CollectionReference reference = FirebaseFirestore.getInstance()

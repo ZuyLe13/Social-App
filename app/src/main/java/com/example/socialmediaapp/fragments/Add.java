@@ -176,7 +176,6 @@ public class Add extends Fragment {
 
         String id = reference.document().getId();
         String description = postDescriptionEditText.getText().toString();
-        List<String> reacts = new ArrayList<>();
 
         Map<String, Object> map = new HashMap<>();
         map.put("id", id);
@@ -186,7 +185,11 @@ public class Add extends Fragment {
 
         map.put("name", MyName);
         map.put("profileImage", String.valueOf(user.getPhotoUrl()));
-        map.put("reacts", reacts);
+        map.put("likes", new ArrayList<>());
+        map.put("hahas", new ArrayList<>());
+        map.put("sads", new ArrayList<>());
+        map.put("wows", new ArrayList<>());
+        map.put("angrys", new ArrayList<>());
         map.put("commentCount", 0);
         map.put("uid", user.getUid());
 
