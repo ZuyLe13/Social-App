@@ -1,24 +1,170 @@
 package com.example.socialmediaapp;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
+import com.example.socialmediaapp.adapter.MessageAdapter;
+import com.example.socialmediaapp.model.ChatModel;
+import com.example.socialmediaapp.model.UserModel;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatActivity extends AppCompatActivity {
+    CircleImageView profileimg;
+    TextView username;
+    FirebaseUser fuser;
+    FirebaseFirestore db;
+    DatabaseReference reference;
+
+    ImageButton backBtn, sendBtn;
+    EditText message;
+    MessageAdapter messageAdapter;
+    List<ChatModel> mChat;
+    RecyclerView recyclerView;
+    Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_chat);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+
+        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setHasFixedSize(true);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
+        linearLayoutManager.setStackFromEnd(true);
+        recyclerView.setLayoutManager(linearLayoutManager);
+
+        profileimg = findViewById(R.id.userAvt);
+        username = findViewById(R.id.userNameTV);
+        backBtn = findViewById(R.id.backBtn);
+        sendBtn = findViewById(R.id.sendMessageBtn);
+        message = findViewById(R.id.msgET);
+
+        fuser = FirebaseAuth.getInstance().getCurrentUser();
+        db = FirebaseFirestore.getInstance();
+
+        final String uID = getIntent().getStringExtra("uID");
+
+        if (uID != null) {
+            loadUserInfoAndReadMessages(uID);
+        }
+
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ChatActivity.this, MessengerActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        sendBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String msg = message.getText().toString();
+                if (!msg.equals("")) {
+                    sendMessage(fuser.getUid(), uID, msg);
+                } else {
+                    Toast.makeText(ChatActivity.this, "Can not send empty message", Toast.LENGTH_SHORT).show();
+                }
+                message.setText("");
+            }
+        });
+    }
+
+    private void sendMessage(String sender, String receiver, String msg) {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("sender", sender);
+        hashMap.put("receiver", receiver);
+        hashMap.put("message", msg);
+
+        ref.child("Chats").push().setValue(hashMap);
+    }
+
+    private void readMessages(final String myid, final String userid, final String imageurl) {
+        mChat = new ArrayList<>();
+        reference = FirebaseDatabase.getInstance().getReference("Chats");
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                mChat.clear();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    ChatModel chat = snapshot.getValue(ChatModel.class);
+                    if (chat != null) {
+                        if ((chat.getReceiver().equals(myid) && chat.getSender().equals(userid)) ||
+                                (chat.getReceiver().equals(userid) && chat.getSender().equals(myid))) {
+                            mChat.add(chat);
+                        }
+                    }
+                }
+                messageAdapter = new MessageAdapter(ChatActivity.this, mChat, imageurl);
+                recyclerView.setAdapter(messageAdapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+    }
+
+    private void loadUserInfoAndReadMessages(String uID) {
+        db.collection("Users").document(uID).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.e("ChatActivity", "Error while loading user info: " + e.getMessage());
+                    return;
+                }
+
+                if (documentSnapshot != null && documentSnapshot.exists()) {
+                    UserModel user = documentSnapshot.toObject(UserModel.class);
+                    if (user != null) {
+                        username.setText(user.getName());
+                        String imageurl = user.getProfileImg();
+                        if (imageurl == null || imageurl.isEmpty()) {
+                            profileimg.setImageResource(R.mipmap.ic_launcher);
+                        } else {
+                            Glide.with(ChatActivity.this)
+                                    .load(imageurl)
+                                    .into(profileimg);
+                        }
+
+                        // Call readMessages with the image URL
+                        readMessages(fuser.getUid(), uID, imageurl);
+                    }
+                }
+            }
         });
     }
 }
