@@ -8,13 +8,16 @@
         android:id="@+id/userAvt"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:src="@drawable/ic_avt"/>
+        android:src="@drawable/ic_avt"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="8dp" />
 
     <TextView
-        android:id="@+id/leftChat"
+        android:id="@+id/show_msg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="50dp"
+        android:layout_toEndOf="@id/userAvt"
+        android:layout_marginStart="8dp"
         android:background="@drawable/left_chat"
         android:gravity="center"
         android:minWidth="80dp"
@@ -22,18 +25,4 @@
         android:text="Hi"
         android:textColor="#242424"
         android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/rightChat"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:background="@drawable/right_chat"
-        android:gravity="center"
-        android:minWidth="80dp"
-        android:padding="12dp"
-        android:text="Hi"
-        android:textColor="#242424"
-        android:textStyle="bold" />
-
 </RelativeLayout>

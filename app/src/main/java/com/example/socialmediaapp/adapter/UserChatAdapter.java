@@ -1,6 +1,7 @@
 package com.example.socialmediaapp.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.socialmediaapp.ChatActivity;
 import com.example.socialmediaapp.R;
 import com.example.socialmediaapp.model.UserModel;
 
@@ -44,6 +46,14 @@ public class UserChatAdapter extends RecyclerView.Adapter<UserChatAdapter.ViewHo
         else{
             Glide.with(mContext).load(user.getProfileImg()).into(holder.profileImg);
         }
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, ChatActivity.class);
+                intent.putExtra("uID",user.getuID());
+                mContext.startActivity(intent);
+            }
+        });
     }
     @Override
     public int getItemCount() {

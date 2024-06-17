@@ -126,7 +126,7 @@ public class Home extends Fragment {
             @Override
             public void onClick(View view) {
                 // Chuyển sang MessengerActivity từ Fragment
-//                startActivity(new Intent(getActivity(), MessengerActivity.class));
+                startActivity(new Intent(getActivity(), MessengerActivity.class));
 
             }
         });
