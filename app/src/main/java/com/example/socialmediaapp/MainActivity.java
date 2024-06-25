@@ -26,6 +26,8 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.example.socialmediaapp.fragments.SignIn;
 import com.example.socialmediaapp.fragments.SignUp;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 
@@ -47,6 +49,10 @@ import com.example.socialmediaapp.fragments.Search;
 import com.example.socialmediaapp.fragments.Notification;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -60,6 +66,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements Search.OnDataPass, Profile.OnDataPassFriend {
 
@@ -68,6 +76,9 @@ public class MainActivity extends AppCompatActivity implements Search.OnDataPass
     public static String currentUid;
     public static Boolean isSearching = false;
     public static String MyName;
+
+    FirebaseUser firebaseUser;
+    DatabaseReference activeRef;
 
 
     public MainActivity(){}
@@ -79,6 +90,9 @@ public class MainActivity extends AppCompatActivity implements Search.OnDataPass
 
         bottomNavView = findViewById(R.id.bottomNavView);
         frameLayout = findViewById(R.id.frameLayout);
+
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        activeRef = FirebaseDatabase.getInstance().getReference("UserActive").child(firebaseUser.getUid());
 
 
 
@@ -147,6 +161,27 @@ public class MainActivity extends AppCompatActivity implements Search.OnDataPass
 
     }
 
+    private void active(String status) {
+        if (firebaseUser != null) {
+            HashMap<String, Object> hashMap = new HashMap<>();
+            hashMap.put("active", status);
+            hashMap.put("uID", firebaseUser.getUid()); // Thêm uID vào bản ghi trong Realtime Database
+
+            activeRef.setValue(hashMap);
+        }
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        active("online");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        active("offline");
+    }
+
     private void loadFragment(Fragment frag, boolean isAppInitialized) {
 
         FragmentManager fragManager = getSupportFragmentManager();
@@ -181,6 +216,9 @@ public class MainActivity extends AppCompatActivity implements Search.OnDataPass
             super.onBackPressed();
         }
     }
+
+
+
 
 //    private void storeProfileImage(Bitmap bitmap, String url){
 //        SharedPreferences preferences = this.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);

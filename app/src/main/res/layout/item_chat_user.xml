@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_height="wrap_content">
 
     <LinearLayout
@@ -12,13 +13,49 @@
         android:gravity="center_vertical"
         android:background="@drawable/bg_notification">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/userAvt"
+        <RelativeLayout
             android:layout_width="65dp"
             android:layout_height="65dp"
             android:layout_marginStart="14dp"
-            android:layout_marginEnd="14dp"
-            android:src="@drawable/ic_avt"/>
+            android:layout_marginEnd="14dp">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/userAvt"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_avt"/>
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/img_on"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                app:civ_border_width="2dp"
+                app:civ_border_color="#05df29"
+                android:visibility="gone"
+                android:layout_alignBottom="@+id/userAvt"
+                android:layout_alignEnd="@+id/userAvt"
+                android:layout_alignRight="@+id/userAvt"
+                android:layout_marginEnd="2dp"
+                android:layout_marginRight="2dp"
+                android:layout_marginBottom="2dp"
+                android:src="@mipmap/ic_launcher"/>
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/img_off"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                app:civ_border_width="2dp"
+                app:civ_border_color="#bfbfbf"
+                android:visibility="gone"
+                android:layout_alignBottom="@+id/userAvt"
+                android:layout_alignEnd="@+id/userAvt"
+                android:layout_alignRight="@+id/userAvt"
+                android:layout_marginEnd="2dp"
+                android:layout_marginRight="2dp"
+                android:layout_marginBottom="2dp"
+                android:src="@mipmap/ic_launcher"/>
+
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -42,8 +79,7 @@
                     android:layout_marginStart="16dp"
                     android:text="1h"
                     style="@style/textSmall"
-                    android:textColor="#828282"
-                    android:src="@drawable/ic_avt"/>
+                    android:textColor="#828282"/>
 
             </LinearLayout>
 
@@ -57,8 +93,7 @@
                     android:layout_width="250dp"
                     android:layout_height="wrap_content"
                     android:text="Message...."
-                    style="@style/textNormal"
-                    android:src="@drawable/ic_avt"/>
+                    style="@style/textNormal"/>
 
                 <TextView
                     android:id="@+id/countMessage"
@@ -71,8 +106,7 @@
                     android:gravity="center"
                     android:textStyle="bold"
                     android:textColor="@color/white"
-                    android:background="@drawable/gradient_bg"
-                    android:src="@drawable/ic_avt"/>
+                    android:background="@drawable/gradient_bg"/>
 
             </LinearLayout>
 
