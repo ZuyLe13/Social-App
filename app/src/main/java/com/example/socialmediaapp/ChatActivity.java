@@ -167,6 +167,6 @@ public class ChatActivity extends AppCompatActivity {
                     }
                 }
             }
-        });
-    }
+        }); // This closing parenthesis was missing
+    } // This closing curly brace was missing
 }
