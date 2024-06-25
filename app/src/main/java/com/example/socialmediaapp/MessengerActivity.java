@@ -24,6 +24,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -34,6 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 public class MessengerActivity extends AppCompatActivity {
 
@@ -127,25 +129,29 @@ public class MessengerActivity extends AppCompatActivity {
             }
         });
     }
-    private void active(String status) {
-        if (fuser != null) {
-            HashMap<String, Object> hashMap = new HashMap<>();
-            hashMap.put("active", status);
-            hashMap.put("uID", fuser.getUid()); // Thêm uID vào bản ghi trong Realtime Database
+    private void status(String status) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-            activeRef.setValue(hashMap);
+        if (fuser != null) {
+            DocumentReference userStatusRef = db.collection("Users").document(fuser.getUid());
+            Map<String, Object> statusUpdate = new HashMap<>();
+            statusUpdate.put("status", status);
+
+            userStatusRef.update(statusUpdate)
+                    .addOnSuccessListener(aVoid -> Log.d("Status Update", "User status updated to " + status))
+                    .addOnFailureListener(e -> Log.e("Status Update", "Error updating user status", e));
         }
     }
     @Override
     protected void onResume() {
         super.onResume();
-        active("online");
+        status("online");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        active("offline");
+        status("offline");
     }
 //    private void readUsers() {
 //        FirebaseFirestore db = FirebaseFirestore.getInstance();

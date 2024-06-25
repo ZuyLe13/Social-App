@@ -3,18 +3,6 @@ package com.example.socialmediaapp.model;
 public class UserModel {
     private String email, name, profileImg, status, uID;
 
-    public String getActive() {
-        return active;
-    }
-
-    public void setActive(String active) {
-        this.active = active;
-    }
-
-    private String active;
-
-
-
     public UserModel(){
 
     }

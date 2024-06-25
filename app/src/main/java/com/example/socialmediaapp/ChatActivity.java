@@ -26,6 +26,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -34,12 +35,13 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatActivity extends AppCompatActivity {
     CircleImageView profileimg;
-    TextView username;
+    TextView username, userStateTV;
     FirebaseUser fuser;
     FirebaseFirestore db;
     DatabaseReference reference;
@@ -67,6 +69,7 @@ public class ChatActivity extends AppCompatActivity {
         backBtn = findViewById(R.id.backBtn);
         sendBtn = findViewById(R.id.sendMessageBtn);
         message = findViewById(R.id.msgET);
+        userStateTV = findViewById(R.id.userStateTV);
 
         fuser = FirebaseAuth.getInstance().getCurrentUser();
         db = FirebaseFirestore.getInstance();
@@ -139,6 +142,30 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
     }
+    private void status(String status) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        if (fuser != null) {
+            DocumentReference userStatusRef = db.collection("Users").document(fuser.getUid());
+            Map<String, Object> statusUpdate = new HashMap<>();
+            statusUpdate.put("status", status);
+
+            userStatusRef.update(statusUpdate)
+                    .addOnSuccessListener(aVoid -> Log.d("Status Update", "User status updated to " + status))
+                    .addOnFailureListener(e -> Log.e("Status Update", "Error updating user status", e));
+        }
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        status("online");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        status("offline");
+    }
 
     private void loadUserInfoAndReadMessages(String uID) {
         db.collection("Users").document(uID).addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -162,11 +189,19 @@ public class ChatActivity extends AppCompatActivity {
                                     .into(profileimg);
                         }
 
+                        // Update userStateTV based on the status field from Firestore
+                        String status = user.getStatus(); // Assuming UserModel has a getStatus method.
+                        if (status != null) {
+                            userStateTV.setText(status.equals("online") ? "Online" : "Offline");
+                        } else {
+                            userStateTV.setText("Offline"); // Default to offline if status is null
+                        }
+
                         // Call readMessages with the image URL
                         readMessages(fuser.getUid(), uID, imageurl);
                     }
                 }
             }
-        }); // This closing parenthesis was missing
-    } // This closing curly brace was missing
+        });
+    }
 }

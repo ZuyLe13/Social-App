@@ -161,25 +161,29 @@ public class MainActivity extends AppCompatActivity implements Search.OnDataPass
 
     }
 
-    private void active(String status) {
-        if (firebaseUser != null) {
-            HashMap<String, Object> hashMap = new HashMap<>();
-            hashMap.put("active", status);
-            hashMap.put("uID", firebaseUser.getUid()); // Thêm uID vào bản ghi trong Realtime Database
+    private void status(String status) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-            activeRef.setValue(hashMap);
+        if (firebaseUser != null) {
+            DocumentReference userStatusRef = db.collection("Users").document(firebaseUser.getUid());
+            Map<String, Object> statusUpdate = new HashMap<>();
+            statusUpdate.put("status", status);
+
+            userStatusRef.update(statusUpdate)
+                    .addOnSuccessListener(aVoid -> Log.d("Status Update", "User status updated to " + status))
+                    .addOnFailureListener(e -> Log.e("Status Update", "Error updating user status", e));
         }
     }
     @Override
     protected void onResume() {
         super.onResume();
-        active("online");
+        status("online");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        active("offline");
+        status("offline");
     }
 
     private void loadFragment(Fragment frag, boolean isAppInitialized) {

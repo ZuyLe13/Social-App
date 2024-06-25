@@ -51,7 +51,7 @@ public class UserChatAdapter extends RecyclerView.Adapter<UserChatAdapter.ViewHo
             Glide.with(mContext).load(user.getProfileImg()).into(holder.profileImg);
         }
         if (isActive){
-            if (user.getActive().equals("online")){
+            if (user.getStatus().equals("online")){
                 holder.img_on.setVisibility(View.VISIBLE);
                 holder.img_off.setVisibility(View.GONE);
 
