@@ -183,7 +183,7 @@ public class SignUp extends Fragment {
         map.put("followers",new ArrayList<>());
         map.put("following",new ArrayList<>());
         map.put("status","offline");
-//        map.put("active","offline");
+        map.put("search",name.toLowerCase());
         map.put("collectionCount", 0);
 
         FirebaseFirestore.getInstance().collection("Users").document(user.getUid())

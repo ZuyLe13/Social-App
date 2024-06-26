@@ -1,6 +1,10 @@
 package com.example.socialmediaapp;
 
+import static java.security.AccessController.getContext;
+
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -29,6 +33,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -103,6 +108,23 @@ public class MessengerActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+        searchET.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                searchUsers(s.toString().toLowerCase());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     private void readChats() {
@@ -153,31 +175,37 @@ public class MessengerActivity extends AppCompatActivity {
         super.onPause();
         status("offline");
     }
-//    private void readUsers() {
-//        FirebaseFirestore db = FirebaseFirestore.getInstance();
-//        CollectionReference usersRef = db.collection("Users");
-//
-//        usersRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
-//            @Override
-//            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-//                if (e != null) {
-//                    Toast.makeText(MessengerActivity.this, "Error while loading users: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-//                if (queryDocumentSnapshots != null) {
-//                    mUsers.clear();
-//                    for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
-//                        UserModel user = document.toObject(UserModel.class);
-//                        if (user != null && !user.getuID().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-//                            mUsers.add(user);
-//                        }
-//                    }
-//                    for (UserModel user : mUsers) {
-//                        Log.d("MessengerActivity", "User: " + user.getName() + ", UID: " + user.getuID());
-//                    }
-//                    userChatAdapter.notifyDataSetChanged();
-//                }
-//            }
-//        });
-//    }
+
+    private void searchUsers(String s) {
+        final FirebaseUser fuser = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Query query = db.collection("Users").orderBy("search")
+                .startAt(s)
+                .endAt(s + "\uf8ff");
+
+        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.e("SearchUsers", "Error while searching users: " + e.getMessage());
+                    return;
+                }
+
+                mUsers.clear();
+                if (queryDocumentSnapshots != null) {
+                    for (DocumentSnapshot snapshot : queryDocumentSnapshots.getDocuments()) {
+                        UserModel user = snapshot.toObject(UserModel.class);
+
+                        if (user != null && fuser != null && !user.getuID().equals(fuser.getUid())) {
+                            mUsers.add(user);
+                        }
+                    }
+
+                    UserChatAdapter userChatAdapter = new UserChatAdapter(MessengerActivity.this, mUsers, false);
+                    recyclerView.setAdapter(userChatAdapter);
+                }
+            }
+        });
+    }
+
 }
