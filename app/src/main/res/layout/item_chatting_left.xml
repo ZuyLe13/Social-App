@@ -25,4 +25,12 @@
         android:text="Hi"
         android:textColor="#242424"
         android:textStyle="bold" />
+    <TextView
+        android:id="@+id/txt_seen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_below="@+id/show_msg"
+
+        />
 </RelativeLayout>
