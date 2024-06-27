@@ -185,6 +185,8 @@ public class ChatActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         status("online");
+        userStateTV.setText("Online");
+
     }
 
     @Override
@@ -192,6 +194,8 @@ public class ChatActivity extends AppCompatActivity {
         super.onPause();
         reference.removeEventListener(seenListener);
         status("offline");
+        userStateTV.setText("Offline"); // Default to offline if status is null
+
     }
 
     private void loadUserInfoAndReadMessages(String uID) {

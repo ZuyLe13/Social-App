@@ -2,6 +2,7 @@ package com.example.socialmediaapp.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,18 +51,25 @@ public class UserChatAdapter extends RecyclerView.Adapter<UserChatAdapter.ViewHo
         else{
             Glide.with(mContext).load(user.getProfileImg()).into(holder.profileImg);
         }
+        Log.d("UserChatAdapter", "User: " + user.getName() + " Status: " + user.getStatus());
+
         if (isActive){
             if (user.getStatus().equals("online")){
                 holder.img_on.setVisibility(View.VISIBLE);
                 holder.img_off.setVisibility(View.GONE);
+                Log.d("isActive", "1");
 
             }else{
                 holder.img_on.setVisibility(View.GONE);
                 holder.img_off.setVisibility(View.VISIBLE);
+                Log.d("isActive", "2");
+
             }
         }else{
             holder.img_on.setVisibility(View.GONE);
             holder.img_off.setVisibility(View.GONE);
+            Log.d("isActive", "3");
+
         }
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,6 +82,8 @@ public class UserChatAdapter extends RecyclerView.Adapter<UserChatAdapter.ViewHo
     }
     @Override
     public int getItemCount() {
+
+        Log.d("UserChatAdapter", "Item count: " + mUsers.size());
         return mUsers.size();
     }
 

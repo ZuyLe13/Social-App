@@ -68,7 +68,7 @@ public class MessengerActivity extends AppCompatActivity {
         settingBtn = findViewById(R.id.settingBtn);
 
         mUsers = new ArrayList<>();
-        userChatAdapter = new UserChatAdapter(this, mUsers, false);
+        userChatAdapter = new UserChatAdapter(this, mUsers, true);
         recyclerView.setAdapter(userChatAdapter);
 
         fuser = FirebaseAuth.getInstance().getCurrentUser();
