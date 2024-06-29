@@ -54,26 +54,26 @@
                     style="@style/textSmall"
                     android:textColor="#828282"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="40dp"
-                    android:text="React"
-                    android:textColor="#242424"
-                    style="@style/textSmall"/>
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginStart="40dp"-->
+<!--                    android:text="React"-->
+<!--                    android:textColor="#242424"-->
+<!--                    style="@style/textSmall"/>-->
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="160dp"
-                    android:layout_marginEnd="10dp"
-                    style="@style/textSmall"
-                    android:textColor="#828282"/>
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginStart="160dp"-->
+<!--                    android:layout_marginEnd="10dp"-->
+<!--                    style="@style/textSmall"-->
+<!--                    android:textColor="#828282"/>-->
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_heart_fill"/>
+<!--                <ImageView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:src="@drawable/ic_heart_fill"/>-->
 
             </LinearLayout>
 

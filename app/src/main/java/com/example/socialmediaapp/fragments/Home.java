@@ -387,7 +387,12 @@ public class Home extends Fragment {
                             Collections.sort(popularPostList, new Comparator<HomeModel>() {
                                 @Override
                                 public int compare(HomeModel o1, HomeModel o2) {
-                                    return o2.getTimeStamp().compareTo(o1.getTimeStamp());
+                                    if (o1.getTimeStamp() != null && o2.getTimeStamp() != null){
+                                        return o2.getTimeStamp().compareTo(o1.getTimeStamp());
+                                    }
+                                    if (o1.getTimeStamp() == null)
+                                        return -1;
+                                    return 1;
                                 }
                             });
                             if (!hadLoaded)

@@ -157,6 +157,13 @@ public class MainActivity extends AppCompatActivity implements Search.OnDataPass
         });
 
         currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        FirebaseFirestore.getInstance().collection("Users").document(currentUid).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists())
+                    MyName = documentSnapshot.getString("name");
+            }
+        });
         loadFragment(new Home(), true);
 
     }

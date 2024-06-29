@@ -58,6 +58,8 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -271,7 +273,17 @@ public class Comment extends Fragment {
 
                     commentList.add(model);
                 }
-
+                Collections.sort(commentList, new Comparator<CommentModel>() {
+                    @Override
+                    public int compare(CommentModel o1, CommentModel o2) {
+                        if (o1.getTimestamp() != null && o2.getTimestamp() != null){
+                            return o2.getTimestamp().compareTo(o1.getTimestamp());
+                        }
+                        if (o1.getTimestamp() == null)
+                            return -1;
+                        return 1;
+                    }
+                });
                 commentAdapter.notifyDataSetChanged();
             }
         });
