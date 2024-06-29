@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.socialmediaapp.adapter.UserChatAdapter;
 import com.example.socialmediaapp.model.ChatModel;
+import com.example.socialmediaapp.model.Chatlist;
 import com.example.socialmediaapp.model.UserModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -51,8 +52,8 @@ public class MessengerActivity extends AppCompatActivity {
     private ImageButton backBtn, settingBtn;
     FirebaseUser fuser;
     DatabaseReference chatRef;
-    DatabaseReference activeRef;
     Set<String> usersSet;
+    private List<Chatlist> usersList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,11 +73,26 @@ public class MessengerActivity extends AppCompatActivity {
         recyclerView.setAdapter(userChatAdapter);
 
         fuser = FirebaseAuth.getInstance().getCurrentUser();
+//        usersList = new ArrayList<>();
+//        chatRef = FirebaseDatabase.getInstance().getReference("Chatlist").child(fuser.getUid());
+//        chatRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                usersList.clear();
+//                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+//                    Chatlist chatlist = snapshot.getValue(Chatlist.class);
+//                    usersList.add(chatlist);
+//                }
+//                chatList();
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
         usersSet = new HashSet<>();
         chatRef = FirebaseDatabase.getInstance().getReference("Chats");
-        activeRef = FirebaseDatabase.getInstance().getReference("UserActive").child(fuser.getUid());
-
-
         chatRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -127,6 +143,88 @@ public class MessengerActivity extends AppCompatActivity {
         });
     }
 
+    private void chatList() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        mUsers = new ArrayList<>();
+
+        for (Chatlist chatlist : usersList) {
+            DocumentReference docRef = db.collection("Users").document(chatlist.getId());
+            docRef.get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        UserModel user = document.toObject(UserModel.class);
+                        if (user != null) {
+                            mUsers.add(user);
+                        }
+                        userChatAdapter.notifyDataSetChanged(); // Update your adapter once data is added
+                    } else {
+                        Log.d("MessengerActivity", "No such user");
+                    }
+                } else {
+                    Log.d("MessengerActivity", "get failed with ", task.getException());
+                }
+            });
+        }
+        recyclerView.setAdapter(userChatAdapter);
+    }
+
+
+    private void status(String status) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        if (fuser != null) {
+            DocumentReference userStatusRef = db.collection("Users").document(fuser.getUid());
+            Map<String, Object> statusUpdate = new HashMap<>();
+            statusUpdate.put("status", status);
+
+            userStatusRef.update(statusUpdate)
+                    .addOnSuccessListener(aVoid -> Log.d("Status Update", "User status updated to " + status))
+                    .addOnFailureListener(e -> Log.e("Status Update", "Error updating user status", e));
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        status("online");
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        status("offline");
+    }
+
+    private void searchUsers(String s) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Query query = db.collection("Users").whereGreaterThanOrEqualTo("search", s)
+                .whereLessThanOrEqualTo("search", s + "\uf8ff");
+
+        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.e("SearchUsers", "Error while searching users: " + e.getMessage());
+                    return;
+                }
+
+                mUsers.clear();
+                if (queryDocumentSnapshots != null) {
+                    for (DocumentSnapshot snapshot : queryDocumentSnapshots.getDocuments()) {
+                        UserModel user = snapshot.toObject(UserModel.class);
+                        if (user != null && !user.getuID().equals(fuser.getUid())) {
+                            mUsers.add(user);
+                        }
+                    }
+                    userChatAdapter.notifyDataSetChanged(); // Notify the adapter
+                }
+            }
+        });
+    }
+
+
     private void readChats() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference usersRef = db.collection("Users");
@@ -151,61 +249,4 @@ public class MessengerActivity extends AppCompatActivity {
             }
         });
     }
-    private void status(String status) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        if (fuser != null) {
-            DocumentReference userStatusRef = db.collection("Users").document(fuser.getUid());
-            Map<String, Object> statusUpdate = new HashMap<>();
-            statusUpdate.put("status", status);
-
-            userStatusRef.update(statusUpdate)
-                    .addOnSuccessListener(aVoid -> Log.d("Status Update", "User status updated to " + status))
-                    .addOnFailureListener(e -> Log.e("Status Update", "Error updating user status", e));
-        }
-    }
-    @Override
-    protected void onResume() {
-        super.onResume();
-        status("online");
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        status("offline");
-    }
-
-    private void searchUsers(String s) {
-        final FirebaseUser fuser = FirebaseAuth.getInstance().getCurrentUser();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        Query query = db.collection("Users").orderBy("search")
-                .startAt(s)
-                .endAt(s + "\uf8ff");
-
-        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.e("SearchUsers", "Error while searching users: " + e.getMessage());
-                    return;
-                }
-
-                mUsers.clear();
-                if (queryDocumentSnapshots != null) {
-                    for (DocumentSnapshot snapshot : queryDocumentSnapshots.getDocuments()) {
-                        UserModel user = snapshot.toObject(UserModel.class);
-
-                        if (user != null && fuser != null && !user.getuID().equals(fuser.getUid())) {
-                            mUsers.add(user);
-                        }
-                    }
-
-                    UserChatAdapter userChatAdapter = new UserChatAdapter(MessengerActivity.this, mUsers, false);
-                    recyclerView.setAdapter(userChatAdapter);
-                }
-            }
-        });
-    }
-
 }
