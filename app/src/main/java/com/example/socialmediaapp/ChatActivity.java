@@ -143,6 +143,25 @@ public class ChatActivity extends AppCompatActivity {
         hashMap.put("isseen", false);
 
         ref.child("Chats").push().setValue(hashMap);
+
+        // add user to chat fragment
+//        final DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("Chatlist")
+//                .child(fuser.getUid())
+//                .child(receiver);
+//
+//        chatRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                if (!dataSnapshot.exists()){
+//                    chatRef.child("id").setValue(receiver);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
     }
 
     private void readMessages(final String myid, final String userid, final String imageurl) {

@@ -15,7 +15,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.socialmediaapp.ChatActivity;
 import com.example.socialmediaapp.R;
+import com.example.socialmediaapp.model.ChatModel;
 import com.example.socialmediaapp.model.UserModel;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import org.w3c.dom.Text;
 
 import java.util.List;
 import java.util.Objects;
@@ -26,6 +36,7 @@ public class UserChatAdapter extends RecyclerView.Adapter<UserChatAdapter.ViewHo
     private Context mContext;
     private List<UserModel> mUsers;
     private boolean isActive;
+    String thelastMsg;
     public UserChatAdapter(Context mContext, List<UserModel> mUsers, boolean isActive){
         this.mUsers=mUsers;
         this.mContext = mContext;
@@ -52,6 +63,12 @@ public class UserChatAdapter extends RecyclerView.Adapter<UserChatAdapter.ViewHo
             Glide.with(mContext).load(user.getProfileImg()).into(holder.profileImg);
         }
         Log.d("UserChatAdapter", "User: " + user.getName() + " Status: " + user.getStatus());
+        if (isActive){
+            lastMessage(user.getuID(), holder.last_msg);
+        }
+        else{
+            holder.last_msg.setVisibility(View.GONE);
+        }
 
         if (isActive){
             if (user.getStatus().equals("online")){
@@ -92,6 +109,7 @@ public class UserChatAdapter extends RecyclerView.Adapter<UserChatAdapter.ViewHo
         public CircleImageView profileImg;
         private ImageView img_on;
         private ImageView img_off;
+        private TextView last_msg;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -100,7 +118,40 @@ public class UserChatAdapter extends RecyclerView.Adapter<UserChatAdapter.ViewHo
             profileImg = itemView.findViewById(R.id.userAvt);
             img_on = itemView.findViewById(R.id.img_on);
             img_off = itemView.findViewById(R.id.img_off);
+            last_msg = itemView.findViewById(R.id.last_msg);
 
         }
+    }
+    private void lastMessage (String userid, TextView last_msg){
+        thelastMsg = "default";
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Chats");
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    ChatModel chat = snapshot.getValue(ChatModel.class);
+                    if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid) ||
+                        chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid())) {
+                            thelastMsg = chat.getMessage();
+                        }
+
+                }
+                switch (thelastMsg){
+                    case "default":
+                        last_msg.setText("No message");
+                        break;
+                    default:
+                        last_msg.setText(thelastMsg);
+                        break;
+                }
+                thelastMsg ="default";
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 }
