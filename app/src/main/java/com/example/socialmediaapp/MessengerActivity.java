@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.socialmediaapp.Notifications.Token;
 import com.example.socialmediaapp.adapter.UserChatAdapter;
 import com.example.socialmediaapp.model.ChatModel;
 import com.example.socialmediaapp.model.Chatlist;
@@ -36,6 +37,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -118,6 +120,7 @@ public class MessengerActivity extends AppCompatActivity {
             }
         });
 
+
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -141,6 +144,18 @@ public class MessengerActivity extends AppCompatActivity {
 
             }
         });
+        // Call updateToken to update the token on activity start
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.w("FCM Token", "Fetching FCM registration token failed", task.getException());
+                        return;
+                    }
+
+                    // Get new FCM registration token
+                    String token = task.getResult();
+                    updateToken(token);
+                });
     }
 
     private void chatList() {
@@ -248,5 +263,10 @@ public class MessengerActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+    private void updateToken (String token){
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Tokens");
+        Token token1 = new Token(token);
+        reference.child(fuser.getUid()).setValue(token1);
     }
 }
