@@ -37,11 +37,17 @@ import com.example.socialmediaapp.MessengerActivity;
 import com.example.socialmediaapp.R;
 import com.example.socialmediaapp.SplashActivity;
 import com.example.socialmediaapp.adapter.HomeAdapter;
+import com.example.socialmediaapp.model.ChatModel;
 import com.example.socialmediaapp.model.HomeModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -76,6 +82,10 @@ public class Home extends Fragment {
     private int popularFixSize = 0, trendingFixSize = 0, followingFixSize = 0;
 
     private ImageButton messageBtn;
+    private TextView countMessage;
+
+    DatabaseReference chatReference;
+    FirebaseFirestore firestoreReference;
 
 
     public Home(){
@@ -93,7 +103,8 @@ public class Home extends Fragment {
         super.onViewCreated(view, saveInstanceState);
 
         init(view);
-
+        firestoreReference = FirebaseFirestore.getInstance();
+        chatReference = FirebaseDatabase.getInstance().getReference("Chats");
         popularBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -130,6 +141,32 @@ public class Home extends Fragment {
 
             }
         });
+        // Lấy số lượng tin nhắn chưa đọc
+        chatReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                int unread = 0;
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    ChatModel chat = snapshot.getValue(ChatModel.class);
+                    if (chat.getReceiver().equals(user.getUid()) && !chat.isIsseen()){
+                        unread++;
+                    }
+                }
+
+                // Cập nhật TextView để hiển thị số lượng tin nhắn chưa đọc
+                if (unread == 0){
+                    countMessage.setVisibility(View.GONE);
+                } else {
+                    countMessage.setVisibility(View.VISIBLE);
+                    countMessage.setText(String.valueOf(unread));
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         loadFollowingData();
         loadTrendingData();
@@ -146,6 +183,7 @@ public class Home extends Fragment {
         followingBtn = view.findViewById(R.id.followBtn);
 
         messageBtn = view.findViewById(R.id.messageBtn);
+        countMessage = view.findViewById(R.id.countMessage);
 
 //        authTemp("21522605@gm.uit.edu.vn", "123456");
         FirebaseAuth auth = FirebaseAuth.getInstance();

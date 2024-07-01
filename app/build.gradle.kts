@@ -93,4 +93,8 @@ dependencies {
 
     implementation("com.facebook.android:facebook-android-sdk:[4,5)")
     api("com.theartofdev.edmodo:android-image-cropper:2.8.+")
+
+    implementation ("com.squareup.retrofit2:retrofit:2.3.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.3.0")
+    implementation ("com.google.firebase:firebase-messaging:17.3.1")
 }
