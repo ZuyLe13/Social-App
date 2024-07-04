@@ -19,7 +19,11 @@ import com.example.socialmediaapp.model.ChatModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -56,7 +60,20 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         ChatModel chat = mChat.get(position);
         Log.d("MessageAdapter", "Message: " + chat.getMessage() + ", isImage: " + chat.getIsImage());
 
-
+        String timeStamp = chat.getTimestamp();
+        if (timeStamp != null && !timeStamp.isEmpty()) {
+            try {
+                Calendar cal = Calendar.getInstance(Locale.ENGLISH);
+                cal.setTimeInMillis(Long.parseLong(timeStamp));
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm aa", Locale.ENGLISH);
+                String datetime = sdf.format(cal.getTime());
+                holder.timeTV.setText(datetime);
+            } catch (NumberFormatException e) {
+                holder.timeTV.setText("Invalid date");
+            }
+        } else {
+            holder.timeTV.setText("None");
+        }
 
         if (chat.getIsImage()) {
             holder.showMsg.setVisibility(View.GONE);
@@ -97,9 +114,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView showMsg;
+        public TextView showMsg, txt_seen, timeTV;
         public ImageView profileImg;
-        public TextView txt_seen;
         public ImageView chat_image;
 
         public ViewHolder(@NonNull View itemView) {
@@ -108,7 +124,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             profileImg = itemView.findViewById(R.id.userAvt);
             txt_seen = itemView.findViewById(R.id.txt_seen);
             chat_image = itemView.findViewById(R.id.chat_image);
-
+            timeTV = itemView.findViewById(R.id.timeTV);
         }
     }
 

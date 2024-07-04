@@ -4,13 +4,16 @@ public class ChatModel {
     private String sender;
     private String receiver;
     private String message;
+
+    private String timestamp;
     private boolean isseen;
     private boolean isImage;  // Đảm bảo có thuộc tính isImage
 
-    public ChatModel(String sender, String receiver, String message, boolean isseen, boolean isImage) {
+    public ChatModel(String sender, String receiver, String message, String timestamp, boolean isseen, boolean isImage) {
         this.sender = sender;
         this.receiver = receiver;
         this.message = message;
+        this.timestamp = timestamp;
         this.isseen = isseen;
         this.isImage = isImage;
     }
@@ -56,6 +59,14 @@ public class ChatModel {
 
     public void setIsImage(boolean isImage) {  // Sửa tên phương thức setter
         this.isImage = isImage;
+    }
+
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
     }
 }
 

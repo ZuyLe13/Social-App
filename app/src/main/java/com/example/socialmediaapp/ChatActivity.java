@@ -217,11 +217,13 @@ public class ChatActivity extends AppCompatActivity {
     private void sendMessageToFirebase(String sender, String receiver, String msg, boolean isImage) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
 
+        String timestamp = String.valueOf(System.currentTimeMillis());
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("sender", sender);
         hashMap.put("receiver", receiver);
         hashMap.put("message", msg);
         hashMap.put("isseen", false);
+        hashMap.put("timestamp", timestamp);
         hashMap.put("isImage", isImage);  // Đảm bảo isImage được đặt đúng
 
         ref.child("Chats").push().setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
