@@ -133,7 +133,11 @@ public class UserChatAdapter extends RecyclerView.Adapter<UserChatAdapter.ViewHo
                     ChatModel chat = snapshot.getValue(ChatModel.class);
                     if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid) ||
                         chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid())) {
+                        if (chat.getIsImage()) {
+                            thelastMsg = "Sent an image";
+                        } else {
                             thelastMsg = chat.getMessage();
+                        }
                         }
 
                 }

@@ -2,6 +2,7 @@ package com.example.socialmediaapp.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,7 +54,24 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ChatModel chat = mChat.get(position);
-        holder.showMsg.setText(chat.getMessage());
+        Log.d("MessageAdapter", "Message: " + chat.getMessage() + ", isImage: " + chat.getIsImage());
+
+
+
+        if (chat.getIsImage()) {
+            holder.showMsg.setVisibility(View.GONE);
+            holder.chat_image.setVisibility(View.VISIBLE);
+            Glide.with(mContext).load(chat.getMessage()).into(holder.chat_image);
+            Log.d("MessageAdapter", "Displaying image message");
+
+
+        } else {
+            holder.showMsg.setText(chat.getMessage());
+            holder.showMsg.setVisibility(View.VISIBLE);
+            holder.chat_image.setVisibility(View.GONE);
+            Log.d("MessageAdapter", "Displaying text message");
+
+        }
 
         if (imgURL.equals("")) {
             holder.profileImg.setImageResource(R.mipmap.ic_launcher);
@@ -82,12 +100,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         public TextView showMsg;
         public ImageView profileImg;
         public TextView txt_seen;
+        public ImageView chat_image;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             showMsg = itemView.findViewById(R.id.show_msg);
             profileImg = itemView.findViewById(R.id.userAvt);
             txt_seen = itemView.findViewById(R.id.txt_seen);
+            chat_image = itemView.findViewById(R.id.chat_image);
 
         }
     }

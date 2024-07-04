@@ -145,17 +145,17 @@ public class MessengerActivity extends AppCompatActivity {
             }
         });
         // Call updateToken to update the token on activity start
-        FirebaseMessaging.getInstance().getToken()
-                .addOnCompleteListener(task -> {
-                    if (!task.isSuccessful()) {
-                        Log.w("FCM Token", "Fetching FCM registration token failed", task.getException());
-                        return;
-                    }
-
-                    // Get new FCM registration token
-                    String token = task.getResult();
-                    updateToken(token);
-                });
+//        FirebaseMessaging.getInstance().getToken()
+//                .addOnCompleteListener(task -> {
+//                    if (!task.isSuccessful()) {
+//                        Log.w("FCM Token", "Fetching FCM registration token failed", task.getException());
+//                        return;
+//                    }
+//
+//                    // Get new FCM registration token
+//                    String token = task.getResult();
+//                    updateToken(token);
+//                });
     }
 
     private void chatList() {
@@ -264,9 +264,9 @@ public class MessengerActivity extends AppCompatActivity {
             }
         });
     }
-    private void updateToken (String token){
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Tokens");
-        Token token1 = new Token(token);
-        reference.child(fuser.getUid()).setValue(token1);
-    }
+//    private void updateToken (String token){
+//        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Tokens");
+//        Token token1 = new Token(token);
+//        reference.child(fuser.getUid()).setValue(token1);
+//    }
 }
