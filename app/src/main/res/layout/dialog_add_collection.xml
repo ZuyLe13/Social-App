@@ -20,16 +20,18 @@
         android:id="@+id/dialogACNameET"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/text_box"
-        android:padding="5dp"
-        android:layout_marginBottom="10dp"
-        android:hint="   Collection Name"/>
+        android:background="@drawable/input"
+        android:padding="16dp"
+        android:layout_marginBottom="16dp"
+        android:textColor="#000"
+        android:hint="Collection Name"/>
 
     <EditText
         android:id="@+id/dialogACDescriptionET"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/text_box"
-        android:padding="5dp"
-        android:hint="   Description"/>
+        android:background="@drawable/input"
+        android:padding="16dp"
+        android:textColor="#000"
+        android:hint="Description"/>
 </LinearLayout>

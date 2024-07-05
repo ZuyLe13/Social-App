@@ -60,7 +60,8 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="100dp"
-            android:gravity="center">
+            android:gravity="center"
+            android:layout_marginTop="16dp">
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/profileImage"
@@ -189,6 +190,7 @@
             </LinearLayout>
 
         </LinearLayout>
+
         <!--        layout cac bieu tuong-->
         <LinearLayout
             android:layout_width="match_parent"
@@ -203,6 +205,7 @@
 <!--                android:contentDescription="@null"-->
 <!--                android:scaleType="fitCenter"-->
 <!--                />-->
+
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/ListFriend_Btn"
                 android:layout_width="match_parent"
@@ -212,12 +215,14 @@
                 android:background="@drawable/auth_bg"
                 android:textColor="#000"
                 android:contentDescription="@null" />
+
 <!--            <TextView-->
 <!--                android:layout_width="30dp"-->
 <!--                android:layout_height="wrap_content"-->
 <!--                android:text=" "-->
 <!--                android:gravity="center" />-->
             />
+
 <!--            <ImageButton-->
 <!--                android:layout_width="wrap_content"-->
 <!--                android:layout_height="wrap_content"-->
@@ -227,6 +232,7 @@
 <!--                />-->
 
         </LinearLayout>
+
         <!--layout shots-->
         <LinearLayout
             android:layout_width="match_parent"
@@ -248,7 +254,8 @@
                     android:textColor="@android:color/black"
                     android:textStyle="bold"
                     android:gravity="center"/>
-                <!--                tao khoang cach giua cac chu-->
+
+                <!--tao khoang cach giua cac chu-->
                 <TextView
                     android:layout_width="10dp"
                     android:layout_height="wrap_content"
@@ -276,7 +283,8 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="16dp"
                     android:visibility="gone" />
-                <!--                tao khoang cach giua cac chu-->
+
+                <!--tao khoang cach giua cac chu-->
                 <TextView
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
@@ -300,7 +308,7 @@
                     android:textStyle="bold"
                     android:gravity="center"/>
 
-                <!--                tao khoang cach giua cac chu-->
+                <!--tao khoang cach giua cac chu-->
                 <TextView
                     android:layout_width="10dp"
                     android:layout_height="wrap_content"
