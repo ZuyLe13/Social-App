@@ -7,8 +7,7 @@
     tools:ignore="MenuTitle">
     <item
         android:id="@+id/navHome"
-        android:icon="@drawable/home"
-         />
+        android:icon="@drawable/home" />
     <item
         android:id="@+id/navSearch"
         android:icon="@drawable/search_ic"/>

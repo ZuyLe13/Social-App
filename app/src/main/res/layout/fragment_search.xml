@@ -12,10 +12,9 @@
         android:id="@+id/searchView"
         style="@style/inputET"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         app:iconifiedByDefault="false"
         app:queryHint="Search..."
-        android:drawablePadding="10dp"
         android:paddingTop="12dp"
         android:paddingBottom="12dp" />
 

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.socialmediaapp.FBAuthActivity;
 import com.example.socialmediaapp.R;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
