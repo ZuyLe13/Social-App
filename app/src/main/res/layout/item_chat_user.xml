@@ -68,19 +68,19 @@
 
                 <TextView
                     android:id="@+id/userName"
-                    android:layout_width="250dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="User Name"
                     style="@style/textTitle"/>
 
                 <TextView
                     android:id="@+id/timeTV"
+                    style="@style/textSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:text="1h"
-                    style="@style/textSmall"
-                    android:textColor="#828282"/>
+                    android:textColor="#828282" />
 
             </LinearLayout>
 

@@ -15,8 +15,8 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/userAvt"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:layout_marginStart="14dp"
             android:layout_marginEnd="14dp"
             android:src="@drawable/ic_avt"
@@ -40,6 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="@style/textSmall"
+                android:paddingRight="20dp"
                 android:src="@drawable/ic_avt"/>
 
         </LinearLayout>
