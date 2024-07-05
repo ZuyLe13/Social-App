@@ -12,7 +12,7 @@
         android:background="@drawable/bg_notification">
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/userAvt"
+            android:id="@+id/avaIV"
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:layout_marginStart="14dp"
@@ -30,7 +30,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/userName"
+                    android:id="@+id/nameTV"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Thanh Pham"
@@ -38,7 +38,7 @@
                     android:src="@drawable/ic_avt"/>
 
                 <TextView
-                    android:id="@+id/commentTV"
+                    android:id="@+id/notiTV"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
@@ -47,11 +47,12 @@
                     android:src="@drawable/ic_avt"/>
 
                 <TextView
+                    android:id="@+id/timeTV"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:text="1h"
-                    style="@style/textSmall"
+                    style="@style/textNormal"
                     android:textColor="#828282"
                     android:src="@drawable/ic_avt"/>
 

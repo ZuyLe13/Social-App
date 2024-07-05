@@ -43,6 +43,8 @@ import com.example.socialmediaapp.model.CollectionModel;
 import com.example.socialmediaapp.model.CommentModel;
 import com.example.socialmediaapp.model.HomeModel;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -290,6 +292,31 @@ public class Comment extends Fragment {
 
         fixSize = commentList.size();
     }
+    private void addToHisNotifications(String hisUid, String pId, String message) {
+        String timestamp = "" + System.currentTimeMillis();
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("pId", pId);
+        hashMap.put("timestamp", timestamp);
+        hashMap.put("pUId", hisUid);
+        hashMap.put("notification", message);
+        hashMap.put("sUid", pId);
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("Users").document(hisUid).collection("Notifications").document(timestamp)
+                .set(hashMap)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        // Thông báo được thêm thành công
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Thêm thông báo thất bại
+                    }
+                });
+    }
 
     private void setClickListener(String id, String name, String uID, String currentUID, List<String> likes, List<String> hahas, List<String> sads, List<String> wows, List<String> angrys, int isChecked, String imageURL, Date timestamp){
 
@@ -328,6 +355,10 @@ public class Comment extends Fragment {
                                             map2.put("commentCount", commentCount + 1);
                                             referenceAll.document(id).update(map2);
                                             fixSize += 1;
+
+                                            // Thêm thông báo cho chủ bài viết
+                                            addToHisNotifications(uid, id, "New comment on your post: " + comment);
+
                                         }
                                     }
                                 }
@@ -344,6 +375,7 @@ public class Comment extends Fragment {
                 }
             }
         });
+
 
         reactBtn.setOnTouchListener(new View.OnTouchListener() {
             @Override

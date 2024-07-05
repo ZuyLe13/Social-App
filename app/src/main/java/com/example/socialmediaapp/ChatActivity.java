@@ -176,34 +176,6 @@ public class ChatActivity extends AppCompatActivity {
         );
     }
 
-    private void sendImgMessage(Uri imageUri) throws IOException {
-        String timeStamp = "" + System.currentTimeMillis();
-        String fileNameAndPath = "ChatImages/" + "post_" + timeStamp;
-        Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(),imageUri);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-        byte[] data = baos.toByteArray();
-        StorageReference ref = FirebaseStorage.getInstance().getReference().child(fileNameAndPath);
-        ref.putBytes(data)
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
-                        while (!uriTask.isSuccessful());
-                        String downloadUri = uriTask.getResult().toString();
-                        if (uriTask.isSuccessful()){
-                            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-                            HashMap<String, Object> hashMap = new HashMap<>();
-                            hashMap.put("sender", fuser.getUid());
-                            hashMap.put("receiver", uID);
-                            hashMap.put("message", downloadUri);
-                            hashMap.put("isseen", false);
-                            hashMap.put("isImage", true);
-                        }
-                    }
-                });
-    }
-
     private void sendMessage() {
         String msg = message.getText().toString();
         if (!msg.equals("")) {

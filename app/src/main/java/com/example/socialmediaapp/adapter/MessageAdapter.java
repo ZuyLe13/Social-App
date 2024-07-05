@@ -65,14 +65,26 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             try {
                 Calendar cal = Calendar.getInstance(Locale.ENGLISH);
                 cal.setTimeInMillis(Long.parseLong(timeStamp));
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm aa", Locale.ENGLISH);
-                String datetime = sdf.format(cal.getTime());
-                holder.timeTV.setText(datetime);
+                SimpleDateFormat sdfDate = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+                SimpleDateFormat sdfTime = new SimpleDateFormat("hh:mm aa", Locale.ENGLISH);
+                String date = sdfDate.format(cal.getTime());
+                String time = sdfTime.format(cal.getTime());
+
+                Calendar currentCal = Calendar.getInstance();
+                String currentDate = sdfDate.format(currentCal.getTime());
+
+                if (date.equals(currentDate)) {
+                    holder.timeTV.setText(time);
+                } else {
+                    SimpleDateFormat sdfDateTime = new SimpleDateFormat("dd/MM/yyyy hh:mm aa", Locale.ENGLISH);
+                    String datetime = sdfDateTime.format(cal.getTime());
+                    holder.timeTV.setText(datetime);
+                }
             } catch (NumberFormatException e) {
                 holder.timeTV.setText("Invalid date");
             }
         } else {
-            holder.timeTV.setText("None");
+            holder.timeTV.setText("");
         }
 
         if (chat.getIsImage()) {

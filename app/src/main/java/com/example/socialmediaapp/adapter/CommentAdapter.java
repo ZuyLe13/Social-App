@@ -13,7 +13,13 @@ import com.bumptech.glide.Glide;
 import com.example.socialmediaapp.R;
 import com.example.socialmediaapp.model.CommentModel;
 import com.example.socialmediaapp.utils.TimeUtils;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.HashMap;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -66,4 +72,5 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentH
 
         }
     }
+
 }

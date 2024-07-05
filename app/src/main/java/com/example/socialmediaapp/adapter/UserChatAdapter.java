@@ -27,7 +27,10 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.w3c.dom.Text;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -64,10 +67,12 @@ public class UserChatAdapter extends RecyclerView.Adapter<UserChatAdapter.ViewHo
         }
         Log.d("UserChatAdapter", "User: " + user.getName() + " Status: " + user.getStatus());
         if (isActive){
-            lastMessage(user.getuID(), holder.last_msg);
+            lastMessage(user.getuID(), holder.last_msg, holder.timeTV);
         }
         else{
             holder.last_msg.setVisibility(View.GONE);
+            holder.timeTV.setVisibility(View.GONE);
+
         }
 
         if (isActive){
@@ -109,7 +114,7 @@ public class UserChatAdapter extends RecyclerView.Adapter<UserChatAdapter.ViewHo
         public CircleImageView profileImg;
         private ImageView img_on;
         private ImageView img_off;
-        private TextView last_msg;
+        private TextView last_msg, timeTV;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -119,29 +124,59 @@ public class UserChatAdapter extends RecyclerView.Adapter<UserChatAdapter.ViewHo
             img_on = itemView.findViewById(R.id.img_on);
             img_off = itemView.findViewById(R.id.img_off);
             last_msg = itemView.findViewById(R.id.last_msg);
-
+            timeTV = itemView.findViewById(R.id.timeTV);
         }
     }
-    private void lastMessage (String userid, TextView last_msg){
+    private void lastMessage(String userid, TextView last_msg, TextView timeTV) {
         thelastMsg = "default";
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Chats");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     ChatModel chat = snapshot.getValue(ChatModel.class);
-                    if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid) ||
-                        chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid())) {
+                    if (chat != null &&
+                            (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid) ||
+                                    chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid()))) {
+
                         if (chat.getIsImage()) {
                             thelastMsg = "Sent an image";
                         } else {
                             thelastMsg = chat.getMessage();
                         }
-                        }
 
+                        // Lấy timestamp và định dạng nó
+                        String timeStamp = chat.getTimestamp();
+                        if (timeStamp != null && !timeStamp.isEmpty()) {
+                            try {
+                                Calendar cal = Calendar.getInstance(Locale.ENGLISH);
+                                cal.setTimeInMillis(Long.parseLong(timeStamp));
+                                SimpleDateFormat sdfDate = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+                                SimpleDateFormat sdfTime = new SimpleDateFormat("hh:mm aa", Locale.ENGLISH);
+                                String date = sdfDate.format(cal.getTime());
+                                String time = sdfTime.format(cal.getTime());
+
+                                Calendar currentCal = Calendar.getInstance();
+                                String currentDate = sdfDate.format(currentCal.getTime());
+
+                                if (date.equals(currentDate)) {
+                                    timeTV.setText(time);
+                                } else {
+                                    SimpleDateFormat sdfDateTime = new SimpleDateFormat("dd/MM/yyyy hh:mm aa", Locale.ENGLISH);
+                                    String datetime = sdfDateTime.format(cal.getTime());
+                                    timeTV.setText(datetime);
+                                }
+                            } catch (NumberFormatException e) {
+                                timeTV.setText("Invalid date");
+                            }
+                        } else {
+                            timeTV.setText("");
+                        }
+                    }
                 }
-                switch (thelastMsg){
+
+                switch (thelastMsg) {
                     case "default":
                         last_msg.setText("No message");
                         break;
@@ -149,7 +184,7 @@ public class UserChatAdapter extends RecyclerView.Adapter<UserChatAdapter.ViewHo
                         last_msg.setText(thelastMsg);
                         break;
                 }
-                thelastMsg ="default";
+                thelastMsg = "default";
             }
 
             @Override
@@ -158,4 +193,5 @@ public class UserChatAdapter extends RecyclerView.Adapter<UserChatAdapter.ViewHo
             }
         });
     }
+
 }
