@@ -6,32 +6,32 @@
     android:layout_height="match_parent"
     tools:context=".fragments.ListEditProfile"
     android:background="@drawable/bg_edit_profile"
-   >
+    >
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profileImage"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="20dp"
         android:src="@drawable/ic_avt"
         app:civ_border_color="#76D1FA"
         app:civ_border_width="2dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <RelativeLayout
         android:id="@+id/linear_1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         android:layout_marginTop="20dp"
+        android:padding="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/profileImage"
         app:layout_constraintTop_toTopOf="parent"
-        android:background="@drawable/border_backgr"
-        >
+        android:background="@drawable/border_backgr">
 
         <TextView
             android:id="@+id/nameTv"
@@ -65,43 +65,41 @@
             android:background="@null"/>
 
     </RelativeLayout>
+
     <LinearLayout
         android:background="@drawable/border_backgr"
         android:id="@+id/email_1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="150dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginEnd="14dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/linear_1"
-        >
+        app:layout_constraintTop_toBottomOf="@id/linear_1">
 
         <!-- Email Label -->
         <TextView
             android:id="@+id/emailLabel"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center_vertical"
-            android:padding="8dp"
+            android:padding="13dp"
             android:text="Email"
-            android:textSize="20dp"
-
+            android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="@color/black"
             />
-
 
         <ImageButton
             android:background="@drawable/border_backgr"
             android:id="@+id/editEmailButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
-            android:padding="8dp"
+            android:padding="10dp"
             android:src="@drawable/ic_edit_next" />
-
 
     </LinearLayout>
 
@@ -110,6 +108,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginEnd="14dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -119,27 +119,23 @@
         <!-- pass Label -->
         <TextView
             android:id="@+id/emalLabel"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center_vertical"
-            android:padding="8dp"
+            android:padding="13dp"
             android:text="Pasword"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:textColor="@color/black"
-            android:textStyle="bold"
-            />
-
+            android:textStyle="bold" />
 
         <ImageButton
             android:background="@drawable/border_backgr"
             android:id="@+id/editPassButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
-            android:padding="8dp"
+            android:padding="10dp"
             android:src="@drawable/ic_edit_next" />
-
 
     </LinearLayout>
 

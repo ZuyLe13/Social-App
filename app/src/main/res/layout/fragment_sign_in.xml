@@ -20,9 +20,8 @@
         android:layout_alignParentBottom="true"
         android:background="@drawable/auth_bg"
         android:orientation="vertical"
-
-        android:paddingLeft="28dp"
         android:paddingTop="40dp"
+        android:paddingLeft="28dp"
         android:paddingRight="28dp">
 
         <EditText
@@ -45,6 +44,21 @@
             android:padding="16dp"
             android:textColor="#000" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:visibility="gone"
+                />
+
+        </LinearLayout>
+
         <TextView
             android:id="@+id/forgotTV"
             android:layout_width="wrap_content"
@@ -56,23 +70,13 @@
             android:text="Forgot Password"
             android:textAllCaps="true"
             android:textColor="@color/primary"
-            android:textSize="16dp" />
-
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@id/signinBtn"
-            android:layout_below="@id/ll1"
-            android:layout_centerHorizontal="true"
-            android:visibility="gone" />
-        <!-- Nen chinh lai layout_below -->
+            android:textSize="16sp" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/signinBtn"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="30dp"
 
             android:background="@drawable/gradient_bg"
             android:letterSpacing="0.08"
@@ -85,7 +89,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="30dp"
 
             android:letterSpacing="0.12"
             android:text="or sign in by"
