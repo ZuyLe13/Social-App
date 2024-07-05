@@ -53,7 +53,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:textColor="#888888" />
+            android:textColor="#888888"
+            android:layout_alignParentEnd="true"
+            android:layout_gravity="end" />
     </LinearLayout>
 
     <de.hdodenhof.circleimageview.CircleImageView
