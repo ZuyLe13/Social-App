@@ -124,7 +124,7 @@
             android:layout_weight="1"
             android:gravity="center_vertical"
             android:padding="13dp"
-            android:text="Pasword"
+            android:text="Password"
             android:textSize="20sp"
             android:textColor="@color/black"
             android:textStyle="bold" />

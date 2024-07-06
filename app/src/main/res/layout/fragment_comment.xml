@@ -47,6 +47,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     style="@style/textSmall"
+                    android:paddingEnd="20dp"
                     android:src="@drawable/ic_avt"/>
 
             </LinearLayout>
