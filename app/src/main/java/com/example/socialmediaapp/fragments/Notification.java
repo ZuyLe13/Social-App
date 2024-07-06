@@ -1,26 +1,25 @@
 package com.example.socialmediaapp.fragments;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.socialmediaapp.R;
 import com.example.socialmediaapp.adapter.NotificationAdapter;
 import com.example.socialmediaapp.model.NotificationModel;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -30,6 +29,7 @@ public class Notification extends Fragment {
     private FirebaseAuth firebaseAuth;
     private ArrayList<NotificationModel> notiList;
     private NotificationAdapter notificationAdapter;
+    private TextView countNotification;
 
     public Notification(){
 
@@ -40,30 +40,38 @@ public class Notification extends Fragment {
         View view = inflater.inflate(R.layout.fragment_notification, container, false);
 
         notificationsRv = view.findViewById(R.id.recyclerView);
+        countNotification = view.findViewById(R.id.countNotification); // Ánh xạ TextView
         firebaseAuth = FirebaseAuth.getInstance();
+
+        notificationsRv.setLayoutManager(new LinearLayoutManager(getContext()));
+        notiList = new ArrayList<>();
+        notificationAdapter = new NotificationAdapter(getContext(), notiList);
+        notificationsRv.setAdapter(notificationAdapter);
 
         getAllNotifications();
         return view;
     }
 
     private void getAllNotifications() {
-        notiList = new ArrayList<>();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("Users").document(firebaseAuth.getUid()).collection("Notifications")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        QuerySnapshot querySnapshot = task.getResult();
-                        if (querySnapshot != null) {
-                            for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-                                NotificationModel model = document.toObject(NotificationModel.class);
-                                notiList.add(model);
-                            }
-                            notificationAdapter = new NotificationAdapter(getActivity(), notiList);
-                            notificationsRv.setAdapter(notificationAdapter);
+                .orderBy("timestamp", Query.Direction.DESCENDING)  // Sắp xếp theo thời gian giảm dần
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                        if (error != null) {
+                            return;
                         }
+                        notiList.clear();
+                        for (DocumentSnapshot document : value.getDocuments()) {
+                            NotificationModel model = document.toObject(NotificationModel.class);
+                            notiList.add(model);
+                        }
+                        notificationAdapter.notifyDataSetChanged();
+                        countNotification.setText("(" + notiList.size() + ")");  // Cập nhật số lượng thông báo
                     }
                 });
     }
+
 
 }

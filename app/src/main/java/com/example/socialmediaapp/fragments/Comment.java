@@ -294,29 +294,43 @@ public class Comment extends Fragment {
     }
     private void addToHisNotifications(String hisUid, String pId, String message) {
         String timestamp = "" + System.currentTimeMillis();
-        HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("pId", pId);
-        hashMap.put("timestamp", timestamp);
-        hashMap.put("pUId", hisUid);
-        hashMap.put("notification", message);
-        hashMap.put("sUid", pId);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("Users").document(hisUid).collection("Notifications").document(timestamp)
-                .set(hashMap)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        // Thông báo được thêm thành công
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // Thêm thông báo thất bại
-                    }
-                });
+        db.collection("Users").document(currentUID).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    String sName = document.getString("name");
+                    String sImage = document.getString("profileImg");
+
+                    HashMap<String, Object> hashMap = new HashMap<>();
+                    hashMap.put("pId", pId);
+                    hashMap.put("timestamp", timestamp);
+                    hashMap.put("pUId", hisUid);
+                    hashMap.put("notification", message);
+                    hashMap.put("sUid", currentUID);
+                    hashMap.put("sName", sName);
+                    hashMap.put("sImage", sImage);
+
+                    db.collection("Users").document(hisUid).collection("Notifications").document(timestamp)
+                            .set(hashMap)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unused) {
+                                    // Thông báo được thêm thành công
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    // Thêm thông báo thất bại
+                                }
+                            });
+                }
+            }
+        });
     }
+
 
     private void setClickListener(String id, String name, String uID, String currentUID, List<String> likes, List<String> hahas, List<String> sads, List<String> wows, List<String> angrys, int isChecked, String imageURL, Date timestamp){
 
@@ -602,30 +616,38 @@ public class Comment extends Fragment {
                     map.put("angrys", angrys);
                     break;
             }
-
-            switch (isChecked){
+            // Add new reaction
+            String reactionType = "";
+            switch (isChecked) {
                 case 1:
                     likes.add(user.getUid());
                     map.put("likes", likes);
+                    reactionType = "liked";
                     break;
                 case 2:
                     hahas.add(user.getUid());
                     map.put("hahas", hahas);
+                    reactionType = "reacted with haha to";
                     break;
                 case 3:
                     sads.add(user.getUid());
                     map.put("sads", sads);
+                    reactionType = "reacted with sad to";
                     break;
                 case 4:
                     wows.add(user.getUid());
                     map.put("wows", wows);
+                    reactionType = "reacted with wow to";
                     break;
                 case 5:
                     angrys.add(user.getUid());
                     map.put("angrys", angrys);
+                    reactionType = "reacted with angry to";
                     break;
             }
             documentReference.update(map);
+            addToHisNotifications(uID, id, user.getDisplayName() + " " + reactionType + " your post.");
+
         }
     }
 

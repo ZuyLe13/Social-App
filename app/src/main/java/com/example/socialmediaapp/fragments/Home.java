@@ -40,6 +40,8 @@ import com.example.socialmediaapp.adapter.HomeAdapter;
 import com.example.socialmediaapp.model.ChatModel;
 import com.example.socialmediaapp.model.HomeModel;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -249,29 +251,38 @@ public class Home extends Fragment {
                             break;
                     }
 
+                    String reactionType = "";
                     switch (isChecked) {
                         case 1:
                             likes.add(user.getUid());
                             map.put("likes", likes);
+                            reactionType = "liked";
                             break;
                         case 2:
                             hahas.add(user.getUid());
                             map.put("hahas", hahas);
+                            reactionType = "reacted with haha to";
                             break;
                         case 3:
                             sads.add(user.getUid());
                             map.put("sads", sads);
+                            reactionType = "reacted with sad to";
                             break;
                         case 4:
                             wows.add(user.getUid());
                             map.put("wows", wows);
+                            reactionType = "reacted with wow to";
                             break;
                         case 5:
                             angrys.add(user.getUid());
                             map.put("angrys", angrys);
+                            reactionType = "reacted with angry to";
                             break;
                     }
                     documentReference.update(map);
+
+                    // Add notification
+                    addToHisNotifications(uID, id, user.getDisplayName() + " " + reactionType + " your post.");
                 }
 
 //                if (type.equals("popular")) loadPopularData();
@@ -281,6 +292,45 @@ public class Home extends Fragment {
 
         });
     }
+    private void addToHisNotifications(String hisUid, String pId, String message) {
+        String timestamp = "" + System.currentTimeMillis();
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("Users").document(user.getUid()).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    String sName = document.getString("name");
+                    String sImage = document.getString("profileImg");
+
+                    HashMap<String, Object> hashMap = new HashMap<>();
+                    hashMap.put("pId", pId);
+                    hashMap.put("timestamp", timestamp);
+                    hashMap.put("pUId", hisUid);
+                    hashMap.put("notification", message);
+                    hashMap.put("sUid", user.getUid());
+                    hashMap.put("sName", sName);
+                    hashMap.put("sImage", sImage);
+
+                    db.collection("Users").document(hisUid).collection("Notifications").document(timestamp)
+                            .set(hashMap)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unused) {
+                                    // Thông báo được thêm thành công
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    // Thêm thông báo thất bại
+                                }
+                            });
+                }
+            }
+        });
+    }
+
 
     private void loadFollowingData() {
         fixSize = followingFixSize;

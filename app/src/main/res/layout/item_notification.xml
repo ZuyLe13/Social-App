@@ -1,76 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"> <!-- Thay đổi từ match_parent sang wrap_content -->
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="2dp"
         android:background="@drawable/bg_notification">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/avaIV"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:layout_marginStart="14dp"
-            android:layout_marginEnd="14dp"
-            android:src="@drawable/ic_avt"/>
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/avaIV"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginEnd="14dp"
+        android:src="@drawable/ic_avt"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/nameTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:text="Thanh Pham"
+                style="@style/textTitle"
+                android:src="@drawable/ic_avt"/>
 
-                <TextView
-                    android:id="@+id/nameTV"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Thanh Pham"
-                    style="@style/textTitle"
-                    android:src="@drawable/ic_avt"/>
-
-                <TextView
-                    android:id="@+id/notiTV"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="followed you!!!"
-                    style="@style/textNormal"
-                    android:src="@drawable/ic_avt"/>
-
-                <TextView
-                    android:id="@+id/timeTV"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="1h"
-                    style="@style/textNormal"
-                    android:textColor="#828282"
-                    android:src="@drawable/ic_avt"/>
-
-            </LinearLayout>
-
-            <androidx.appcompat.widget.AppCompatButton
+            <TextView
+                android:id="@+id/notiTV"
                 android:layout_width="wrap_content"
-                android:layout_height="44dp"
-                android:layout_marginStart="90dp"
-                android:text="Follow"
-                android:textAllCaps="false"
-                android:letterSpacing="0.05"
-                android:textColor="@color/primary"
-                android:background="@drawable/btn_outline"
-                style="@style/textNormal"/>
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="followed you!!!"
+                style="@style/textNormal"
+                android:src="@drawable/ic_avt"/>
+
+            <TextView
+                android:id="@+id/timeTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="1h"
+                style="@style/textNormal"
+                android:textColor="#828282"
+                android:src="@drawable/ic_avt"/>
 
         </LinearLayout>
 
+        <androidx.appcompat.widget.AppCompatButton
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:layout_marginStart="90dp"
+            android:text="Follow"
+            android:textAllCaps="false"
+            android:letterSpacing="0.05"
+            android:textColor="@color/primary"
+            android:background="@drawable/btn_outline"
+            style="@style/textNormal"/>
+
     </LinearLayout>
 
-</RelativeLayout>
+</LinearLayout>
+
+    </RelativeLayout>

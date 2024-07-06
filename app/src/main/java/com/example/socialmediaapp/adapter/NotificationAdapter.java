@@ -1,6 +1,7 @@
 package com.example.socialmediaapp.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.socialmediaapp.FragmentReplacerActivity;
 import com.example.socialmediaapp.R;
 import com.example.socialmediaapp.model.NotificationModel;
 import com.google.firebase.auth.FirebaseAuth;
@@ -48,7 +50,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     @Override
     public void onBindViewHolder(@NonNull HolderNotification holder, int position) {
         NotificationModel model = notificationList.get(position);
-        String noti = model.getNotifications();
+        String noti = model.getNotification();
         String timestamp = model.getTimestamp();
         String senderUid = model.getsUid();
 
@@ -56,28 +58,12 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         cal.setTimeInMillis(Long.parseLong(timestamp));
         SimpleDateFormat sdfDateTime = new SimpleDateFormat("dd/MM/yyyy hh:mm aa", Locale.ENGLISH);
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("Users").document(senderUid).get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DocumentSnapshot document = task.getResult();
-                if (document.exists()) {
-                    String name = document.getString("name");
-                    String img = document.getString("profileImg");
-                    String email = document.getString("email");
-
-                    model.setsName(name);
-                    model.setsEmail(email);
-                    model.setsImage(img);
-
-                    holder.nameTV.setText(name);
-                    if (Objects.equals(img, "")){
-                        holder.avaIV.setImageResource(R.mipmap.ic_launcher);
-                    } else {
-                        Glide.with(context).load(img).into(holder.avaIV);
-                    }
-                }
-            }
-        });
+        holder.nameTV.setText(model.getsName());
+        if (Objects.equals(model.getsImage(), "")) {
+            holder.avaIV.setImageResource(R.mipmap.ic_launcher);
+        } else {
+            Glide.with(context).load(model.getsImage()).into(holder.avaIV);
+        }
 
         holder.notiTV.setText(noti);
         holder.timeTV.setText(sdfDateTime.format(cal.getTime()));
@@ -85,7 +71,12 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //click to open
+                Intent intent = new Intent(context, FragmentReplacerActivity.class);
+                intent.putExtra("id", model.getpId());
+                intent.putExtra("uid", model.getpUId());
+                intent.putExtra("currentUID", model.getsUid());
+                intent.putExtra("FragmentType", "Comment");
+                context.startActivity(intent);
             }
         });
     }

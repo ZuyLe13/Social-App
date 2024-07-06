@@ -1,28 +1,27 @@
 package com.example.socialmediaapp.model;
 
 public class NotificationModel {
-    String pid, timestamp, pUid, notifications, sUid, sName, sEmail, sImage;
+    String pId, timestamp, pUId, notification, sUid, sName, sImage;
 
     public NotificationModel() {
     }
 
-    public NotificationModel(String pid, String timestamp, String pUid, String notifications, String sUid, String sName, String sEmail, String sImage) {
-        this.pid = pid;
+    public NotificationModel(String pId, String timestamp, String pUId, String notification, String sUid, String sName, String sImage) {
+        this.pId = pId;
         this.timestamp = timestamp;
-        this.pUid = pUid;
-        this.notifications = notifications;
+        this.pUId = pUId;
+        this.notification = notification;
         this.sUid = sUid;
         this.sName = sName;
-        this.sEmail = sEmail;
         this.sImage = sImage;
     }
 
-    public String getPid() {
-        return pid;
+    public String getpId() {
+        return pId;
     }
 
-    public void setPid(String pid) {
-        this.pid = pid;
+    public void setpId(String pId) {
+        this.pId = pId;
     }
 
     public String getTimestamp() {
@@ -33,20 +32,20 @@ public class NotificationModel {
         this.timestamp = timestamp;
     }
 
-    public String getpUid() {
-        return pUid;
+    public String getpUId() {
+        return pUId;
     }
 
-    public void setpUid(String pUid) {
-        this.pUid = pUid;
+    public void setpUId(String pUId) {
+        this.pUId = pUId;
     }
 
-    public String getNotifications() {
-        return notifications;
+    public String getNotification() {
+        return notification;
     }
 
-    public void setNotifications(String notifications) {
-        this.notifications = notifications;
+    public void setNotification(String notification) {
+        this.notification = notification;
     }
 
     public String getsUid() {
@@ -63,14 +62,6 @@ public class NotificationModel {
 
     public void setsName(String sName) {
         this.sName = sName;
-    }
-
-    public String getsEmail() {
-        return sEmail;
-    }
-
-    public void setsEmail(String sEmail) {
-        this.sEmail = sEmail;
     }
 
     public String getsImage() {
