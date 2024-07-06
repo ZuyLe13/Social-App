@@ -301,7 +301,7 @@ public class Profile extends Fragment{
                                 myRef.update(map2);
 
                                 followBtn.setText("Follow");
-                                Toast.makeText(view.getContext(), "Followed", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(view.getContext(), "Unfollowed", Toast.LENGTH_SHORT).show();
                             }else {
                                 Log.e("Tag", "" + task.getException().getMessage());
                             }
@@ -322,7 +322,7 @@ public class Profile extends Fragment{
                                 myRef.update(map2);
 
                                 followBtn.setText("Unfollow");
-                                Toast.makeText(view.getContext(), "Unfollowed", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(view.getContext(), "Followed", Toast.LENGTH_SHORT).show();
 
                             }else {
                                 Log.e("Tag", "" + task.getException().getMessage());
