@@ -72,10 +72,15 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, FragmentReplacerActivity.class);
-                intent.putExtra("id", model.getpId());
-                intent.putExtra("uid", model.getpUId());
-                intent.putExtra("currentUID", model.getsUid());
-                intent.putExtra("FragmentType", "Comment");
+                if (noti.contains("comment") || noti.contains("react")) {
+                    intent.putExtra("id", model.getpId());
+                    intent.putExtra("uid", model.getpUId());
+                    intent.putExtra("currentUID", model.getsUid());
+                    intent.putExtra("FragmentType", "Comment");
+                } else if (noti.contains("friend request")) {
+//                    intent.putExtra("uid", model.getsUid());
+//                    intent.putExtra("FragmentType", "Profile");
+                }
                 context.startActivity(intent);
             }
         });

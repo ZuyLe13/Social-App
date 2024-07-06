@@ -14,6 +14,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.socialmediaapp.fragments.Collection;
 import com.example.socialmediaapp.fragments.Comment;
+import com.example.socialmediaapp.fragments.Profile;
 import com.example.socialmediaapp.fragments.SignIn;
 import com.example.socialmediaapp.fragments.SignUp;
 
@@ -33,13 +34,32 @@ public class FragmentReplacerActivity extends AppCompatActivity {
 
         frameLayout = findViewById(R.id.TframeLayout);
 
-        String FragmentType = "Init";
-        if (getIntent().getStringExtra("FragmentType") != null)
-            FragmentType = getIntent().getStringExtra("FragmentType");
-        if (FragmentType.equals("Comment")) {
-            setFragment(new Comment());
-        } else if (FragmentType.equals("Collection")){
-            setFragment(new Collection());
+//        String FragmentType = "Init";
+//        if (getIntent().getStringExtra("FragmentType") != null)
+//            FragmentType = getIntent().getStringExtra("FragmentType");
+//        if (FragmentType.equals("Comment")) {
+//            setFragment(new Comment());
+//        } else if (FragmentType.equals("Collection")){
+//            setFragment(new Collection());
+//        } else {
+//            setFragment(new SignIn());
+//        }
+        String FragmentType = getIntent().getStringExtra("FragmentType");
+        if (FragmentType != null) {
+            switch (FragmentType) {
+                case "Comment":
+                    setFragment(new Comment());
+                    break;
+                case "Profile":
+                    setFragment(new Profile());
+                    break;
+                case "Collection":
+                    setFragment(new Collection());
+                    break;
+                default:
+                    setFragment(new SignIn());
+                    break;
+            }
         } else {
             setFragment(new SignIn());
         }
@@ -60,6 +80,13 @@ public class FragmentReplacerActivity extends AppCompatActivity {
             bundle.putString("id", id);
             bundle.putString("uid", uid);
             bundle.putString("currentUID", currentUID);
+            fragment.setArguments(bundle);
+        }
+        if (fragment instanceof Profile) {
+            String uid = getIntent().getStringExtra("uid");
+
+            Bundle bundle = new Bundle();
+            bundle.putString("uid", uid);
             fragment.setArguments(bundle);
         }
         if (fragment instanceof Collection){

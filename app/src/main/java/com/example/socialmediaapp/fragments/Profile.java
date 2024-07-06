@@ -181,12 +181,24 @@ public class Profile extends Fragment{
         super.onViewCreated(view, savedInstanceState);
 
         init(view);
-        if (isSearching){
-            uid = currentUid;
-            isMyProfile = false;
+        // Check if arguments are passed (e.g., from a notification click)
+        if (getArguments() != null) {
+            uid = getArguments().getString("uid");
+            if (uid != null && !uid.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                isMyProfile = false;
+            } else {
+                isMyProfile = true;
+                uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            }
         } else {
-            uid = user.getUid();
-            isMyProfile = true;
+            // Fall back to search-related logic if no arguments are passed
+            if (isSearching){
+                uid = currentUid;
+                isMyProfile = false;
+            } else {
+                uid = user.getUid();
+                isMyProfile = true;
+            }
         }
 
         if (isMyProfile){
@@ -948,6 +960,40 @@ public class Profile extends Fragment{
 
         popupWindow.showAsDropDown(view);
     }
+    private void addToHisNotifications(String hisUid, String message, String senderUid) {
+        String timestamp = "" + System.currentTimeMillis();
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("Users").document(senderUid).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    String sName = document.getString("name");
+                    String sImage = document.getString("profileImg");
+
+                    HashMap<String, Object> hashMap = new HashMap<>();
+                    hashMap.put("pId", "");
+                    hashMap.put("timestamp", timestamp);
+                    hashMap.put("pUId", hisUid);
+                    hashMap.put("notification", message);
+                    hashMap.put("sUid", senderUid);
+                    hashMap.put("sName", sName);
+                    hashMap.put("sImage", sImage);
+
+                    db.collection("Users").document(hisUid).collection("Notifications").document(timestamp)
+                            .set(hashMap)
+                            .addOnSuccessListener(unused -> {
+                                // Thông báo được thêm thành công
+                            })
+                            .addOnFailureListener(e -> {
+                                // Thêm thông báo thất bại
+                            });
+                }
+            }
+        });
+    }
+
+
 
     private void addFriendAction(){
         CollectionReference reference = FirebaseFirestore.getInstance().collection("Relationships");
@@ -976,6 +1022,8 @@ public class Profile extends Fragment{
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()){
                                 Toast.makeText(getContext(), "An invitation has been sent", Toast.LENGTH_SHORT).show();
+                                addToHisNotifications(uid, "You have a new friend request from " + name1, user.getUid());
+
                             } else {
                                 Toast.makeText(getContext(), "Failed to send an add friend invitation", Toast.LENGTH_SHORT).show();
                             }
@@ -1030,6 +1078,8 @@ public class Profile extends Fragment{
         acceptBtn.setVisibility(GONE);
         denyBtn.setVisibility(GONE);
         addfrBtn.setText("Unfriend");
+        addToHisNotifications(uid, "Your friend request has been accepted by " + user.getDisplayName(), user.getUid());
+
     }
 
     private void unFriendAction(){
