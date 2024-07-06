@@ -107,6 +107,22 @@ public class Comment extends Fragment {
         // Cấu hình bàn phím mềm
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
+        // Kiểm tra người dùng đã đăng nhập
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            Toast.makeText(getContext(), "User is not logged in", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        currentUID = user.getUid();
+        String displayName = user.getDisplayName();
+        String photoUrl = user.getPhotoUrl() != null ? user.getPhotoUrl().toString() : "";
+
+        if (currentUID == null || displayName == null) {
+            Toast.makeText(getContext(), "User information is not available", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         init(view);
         loadDataFromFireStore();
     }
@@ -292,43 +308,35 @@ public class Comment extends Fragment {
 
         fixSize = commentList.size();
     }
-    private void addToHisNotifications(String hisUid, String pId, String message) {
+
+
+    private void addToHisNotifications(String hisUid, String pId, String message, String senderUid, String senderName, String senderImage) {
         String timestamp = "" + System.currentTimeMillis();
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("Users").document(currentUID).get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DocumentSnapshot document = task.getResult();
-                if (document.exists()) {
-                    String sName = document.getString("name");
-                    String sImage = document.getString("profileImg");
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("pId", pId);
+        hashMap.put("timestamp", timestamp);
+        hashMap.put("pUId", hisUid);
+        hashMap.put("notification", message);
+        hashMap.put("sUid", senderUid);
+        hashMap.put("sName", senderName);
+        hashMap.put("sImage", senderImage);
 
-                    HashMap<String, Object> hashMap = new HashMap<>();
-                    hashMap.put("pId", pId);
-                    hashMap.put("timestamp", timestamp);
-                    hashMap.put("pUId", hisUid);
-                    hashMap.put("notification", message);
-                    hashMap.put("sUid", currentUID);
-                    hashMap.put("sName", sName);
-                    hashMap.put("sImage", sImage);
-
-                    db.collection("Users").document(hisUid).collection("Notifications").document(timestamp)
-                            .set(hashMap)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void unused) {
-                                    // Thông báo được thêm thành công
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    // Thêm thông báo thất bại
-                                }
-                            });
-                }
-            }
-        });
+        db.collection("Users").document(hisUid).collection("Notifications").document(timestamp)
+                .set(hashMap)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        // Thông báo được thêm thành công
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Thêm thông báo thất bại
+                    }
+                });
     }
 
 
@@ -340,9 +348,21 @@ public class Comment extends Fragment {
                 String comment = commentET.getText().toString();
                 if (comment.isEmpty() || comment.equals(" ")){
                     Toast.makeText(getContext(), "Please enter a valid comment", Toast.LENGTH_SHORT).show();
+                    return;
                 }
 
                 String commentID = reference.document().getId();
+
+                // Kiểm tra giá trị null
+                String currentUID = user != null ? user.getUid() : null;
+                String displayName = user != null ? user.getDisplayName() : null;
+                Uri photoUrl = user != null ? user.getPhotoUrl() : null;
+                String photoUrlString = photoUrl != null ? photoUrl.toString() : "";
+
+                if (currentUID == null || displayName == null) {
+                    Toast.makeText(getContext(), "User information is not available", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 Map<String, Object> map = new HashMap<>();
                 map.put("uid", currentUID);
@@ -350,8 +370,8 @@ public class Comment extends Fragment {
                 map.put("id", commentID);
                 map.put("comment", comment);
                 map.put("timestamp", new Timestamp(System.currentTimeMillis() / 1000, 0));
-                map.put("name", user.getDisplayName().toString());
-                map.put("avt", user.getPhotoUrl().toString());
+                map.put("name", displayName);
+                map.put("avt", photoUrlString);
 
                 reference.document(commentID).set(map).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
@@ -371,7 +391,9 @@ public class Comment extends Fragment {
                                             fixSize += 1;
 
                                             // Thêm thông báo cho chủ bài viết
-                                            addToHisNotifications(uid, id, "New comment on your post: " + comment);
+//                                            addToHisNotifications(uid, id, "New comment on your post: " + comment);
+
+                                            addToHisNotifications(uid, id, "New comment on your post: " + comment, currentUID, displayName, photoUrlString);
 
                                         }
                                     }
@@ -646,7 +668,13 @@ public class Comment extends Fragment {
                     break;
             }
             documentReference.update(map);
-            addToHisNotifications(uID, id, user.getDisplayName() + " " + reactionType + " your post.");
+            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+            String currentUserName = currentUser.getDisplayName();
+            String currentUserUid = currentUser.getUid();
+            String currentUserProfileImage = currentUser.getPhotoUrl().toString();
+
+            // Pass user details when creating the notification
+            addToHisNotifications(uID, id, currentUserName + " " + reactionType + " your post.", currentUserUid, currentUserName, currentUserProfileImage);
 
         }
     }

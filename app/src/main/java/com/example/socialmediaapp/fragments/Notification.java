@@ -1,11 +1,13 @@
 package com.example.socialmediaapp.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -30,6 +32,17 @@ public class Notification extends Fragment {
     private ArrayList<NotificationModel> notiList;
     private NotificationAdapter notificationAdapter;
     private TextView countNotification;
+//    private OnDataPass onDataPass;
+//
+//    public interface OnDataPass{
+//        void onChange(String uID);
+//    }
+
+//    @Override
+//    public void onAttach(@NonNull Context context){
+//        super.onAttach(context);
+//        onDataPass = (OnDataPass) context;
+//    }
 
     public Notification(){
 
@@ -74,4 +87,12 @@ public class Notification extends Fragment {
     }
 
 
+//    private void chooseProfile(){
+//        notificationAdapter.OnProfileChosen(new notificationAdapter.OnProfileChosen() {
+//            @Override
+//            public void onChosen(String uID) {
+//                onDataPass.onChange(uID);
+//            }
+//        });
+//    }
 }

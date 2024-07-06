@@ -37,10 +37,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     private String imgURL;
     FirebaseUser fuser;
 
-    public MessageAdapter(Context mContext, List<ChatModel> mChat, String imgURL){
+    public MessageAdapter(Context mContext, List<ChatModel> mChat, String imgURL) {
         this.mChat = mChat;
         this.mContext = mContext;
         this.imgURL = imgURL;
+    }
+    public void setImageURL(String imgURL) {
+        this.imgURL = imgURL;
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -54,6 +58,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             return new MessageAdapter.ViewHolder(view);
         }
     }
+
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
@@ -92,33 +97,32 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             holder.chat_image.setVisibility(View.VISIBLE);
             Glide.with(mContext).load(chat.getMessage()).into(holder.chat_image);
             Log.d("MessageAdapter", "Displaying image message");
-
-
         } else {
             holder.showMsg.setText(chat.getMessage());
             holder.showMsg.setVisibility(View.VISIBLE);
             holder.chat_image.setVisibility(View.GONE);
             Log.d("MessageAdapter", "Displaying text message");
-
         }
 
-        if (imgURL.equals("")) {
+        if (imgURL == null || imgURL.isEmpty()) {
             holder.profileImg.setImageResource(R.mipmap.ic_launcher);
+            Log.d("imgURL", "nope");
         } else {
             Glide.with(mContext).load(imgURL).into(holder.profileImg);
+            Log.d("imgURL", "yes");
         }
-        if (position == mChat.size()-1){
-            if (chat.isIsseen()){
+
+        if (position == mChat.size() - 1) {
+            if (chat.isIsseen()) {
                 holder.txt_seen.setText("Seen");
-            }
-            else{
+            } else {
                 holder.txt_seen.setText("Sent");
             }
-        }
-        else{
+        } else {
             holder.txt_seen.setVisibility(View.GONE);
         }
     }
+
 
     @Override
     public int getItemCount() {
@@ -127,7 +131,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public TextView showMsg, txt_seen, timeTV;
-        public ImageView profileImg;
+        public CircleImageView profileImg;
         public ImageView chat_image;
 
         public ViewHolder(@NonNull View itemView) {

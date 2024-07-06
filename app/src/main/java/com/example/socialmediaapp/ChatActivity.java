@@ -397,10 +397,13 @@ public class ChatActivity extends AppCompatActivity {
                         String imageurl = user.getProfileImg();
                         if (imageurl == null || imageurl.isEmpty()) {
                             profileimg.setImageResource(R.mipmap.ic_launcher);
+                            Log.e("load img", "bad");
+
                         } else {
                             Glide.with(getApplicationContext())
                                     .load(imageurl)
                                     .into(profileimg);
+                            Log.e("load img", "yes");
                         }
 
                         // Update userStateTV based on the status field from Firestore
@@ -410,6 +413,8 @@ public class ChatActivity extends AppCompatActivity {
                         } else {
                             userStateTV.setText("Offline"); // Default to offline if status is null
                         }
+                        // Pass the image URL to the adapter
+                        messageAdapter.setImageURL(imageurl);
 
                         // Call readMessages with the image URL
                         readMessages(fuser.getUid(), uID, imageurl);

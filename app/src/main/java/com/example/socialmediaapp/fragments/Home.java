@@ -282,7 +282,12 @@ public class Home extends Fragment {
                     documentReference.update(map);
 
                     // Add notification
-                    addToHisNotifications(uID, id, user.getDisplayName() + " " + reactionType + " your post.");
+                    FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                    String currentUserName = currentUser.getDisplayName();
+                    String currentUserUid = currentUser.getUid();
+                    String currentUserProfileImage = currentUser.getPhotoUrl().toString();
+
+                    addToHisNotifications(uID, id, currentUserName + " " + reactionType + " your post.", currentUserUid, currentUserName, currentUserProfileImage);
                 }
 
 //                if (type.equals("popular")) loadPopularData();
@@ -292,43 +297,33 @@ public class Home extends Fragment {
 
         });
     }
-    private void addToHisNotifications(String hisUid, String pId, String message) {
+    private void addToHisNotifications(String hisUid, String pId, String message, String senderUid, String senderName, String senderImage) {
         String timestamp = "" + System.currentTimeMillis();
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("Users").document(user.getUid()).get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DocumentSnapshot document = task.getResult();
-                if (document.exists()) {
-                    String sName = document.getString("name");
-                    String sImage = document.getString("profileImg");
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("pId", pId);
+        hashMap.put("timestamp", timestamp);
+        hashMap.put("pUId", hisUid);
+        hashMap.put("notification", message);
+        hashMap.put("sUid", senderUid);
+        hashMap.put("sName", senderName);
+        hashMap.put("sImage", senderImage);
 
-                    HashMap<String, Object> hashMap = new HashMap<>();
-                    hashMap.put("pId", pId);
-                    hashMap.put("timestamp", timestamp);
-                    hashMap.put("pUId", hisUid);
-                    hashMap.put("notification", message);
-                    hashMap.put("sUid", user.getUid());
-                    hashMap.put("sName", sName);
-                    hashMap.put("sImage", sImage);
-
-                    db.collection("Users").document(hisUid).collection("Notifications").document(timestamp)
-                            .set(hashMap)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void unused) {
-                                    // Thông báo được thêm thành công
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    // Thêm thông báo thất bại
-                                }
-                            });
-                }
-            }
-        });
+        db.collection("Users").document(hisUid).collection("Notifications").document(timestamp)
+                .set(hashMap)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        // Thông báo được thêm thành công
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Thêm thông báo thất bại
+                    }
+                });
     }
 
 
