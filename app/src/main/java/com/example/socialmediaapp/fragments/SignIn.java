@@ -46,6 +46,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -295,8 +296,9 @@ public class SignIn extends Fragment {
         map.put("email",acc.getEmail());
         map.put("profileImg",String.valueOf(acc.getPhotoUrl()));
         map.put("uID",user.getUid());
-        map.put("followers",0);
-        map.put("following",0);
+        map.put("followers",new ArrayList<>());
+        map.put("following",new ArrayList<>());
+        map.put("collectionCount", 0);
 
 
         FirebaseFirestore.getInstance().collection("Users").document(user.getUid())
