@@ -34,7 +34,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     private Context context;
     private ArrayList<NotificationModel> notificationList;
     private FirebaseAuth firebaseAuth;
-    private OnProfileChosen onProfileChosen;
+
     public NotificationAdapter(Context context, ArrayList<NotificationModel> notificationList) {
         this.context = context;
         this.notificationList = notificationList;
@@ -73,29 +73,29 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, FragmentReplacerActivity.class);
-//                if (noti.contains("comment") || noti.contains("react")) {
-//                    intent.putExtra("id", model.getpId());
-//                    intent.putExtra("uid", model.getpUId());
-//                    intent.putExtra("currentUID", model.getsUid());
-//                    intent.putExtra("FragmentType", "Comment");
-//                } else if (noti.contains("friend request")) {
-////                    onProfileChosen.onChosen(userModelList.get(position).getuID());
-//                }
-                intent.putExtra("id", model.getpId());
-                intent.putExtra("uid", model.getpUId());
-                intent.putExtra("currentUID", model.getsUid());
-                intent.putExtra("FragmentType", "Comment");
+
+                if (noti.contains("friend request")) {
+                    intent.putExtra("uid", model.getsUid());
+                    intent.putExtra("currentUID", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                    intent.putExtra("FragmentType", "Profile");
+                } else if (noti.contains("comment") || noti.contains("react")) {
+                    intent.putExtra("id", model.getpId());
+                    intent.putExtra("uid", model.getpUId());
+                    intent.putExtra("currentUID", model.getsUid());
+                    intent.putExtra("FragmentType", "Comment");
+                }
+
                 context.startActivity(intent);
             }
         });
     }
+
     @Override
     public int getItemCount() {
         return notificationList.size();
     }
 
-
-    class HolderNotification extends RecyclerView.ViewHolder{
+    class HolderNotification extends RecyclerView.ViewHolder {
         ImageView avaIV;
         TextView nameTV, notiTV, timeTV;
 
@@ -106,12 +106,5 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             notiTV = itemView.findViewById(R.id.notiTV);
             timeTV = itemView.findViewById(R.id.timeTV);
         }
-    }
-    public void OnProfileChosen (OnProfileChosen onProfileChosen){
-        this.onProfileChosen = onProfileChosen;
-    }
-
-    public interface OnProfileChosen{
-        void onChosen(String uID);
     }
 }

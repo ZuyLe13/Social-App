@@ -142,6 +142,8 @@ public class Profile extends Fragment{
     private OnDataPassFriend onDataPassFriend;
     private UserAdapter friendAdapter;
     private List<UserModel> friendList;
+    private String currentUID;
+
 
     public Profile(){
 
@@ -184,6 +186,7 @@ public class Profile extends Fragment{
         // Check if arguments are passed (e.g., from a notification click)
         if (getArguments() != null) {
             uid = getArguments().getString("uid");
+            currentUID = getArguments().getString("currentUID");
             if (uid != null && !uid.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
                 isMyProfile = false;
             } else {
@@ -191,16 +194,15 @@ public class Profile extends Fragment{
                 uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
             }
         } else {
-            // Fall back to search-related logic if no arguments are passed
-            if (isSearching){
+            if (isSearching) {
                 uid = currentUid;
                 isMyProfile = false;
             } else {
                 uid = user.getUid();
                 isMyProfile = true;
             }
+            currentUID = FirebaseAuth.getInstance().getCurrentUser().getUid(); // Ensure currentUID is set
         }
-
         if (isMyProfile){
             addfr_followLL.setVisibility(GONE);
             countLayout.setVisibility(View.VISIBLE);
@@ -433,15 +435,20 @@ public class Profile extends Fragment{
         fixSize = 0;
     }
 
-    private void loadBasicData(View view){
+    private void loadBasicData(View view) {
+        // Lấy giá trị của currentUID từ FirebaseAuth nếu nó chưa được gán
+        if (currentUID == null) {
+            currentUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        }
+
         userRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                if (error != null){
+                if (error != null) {
                     Log.e("Load user ref error", error.getMessage());
                     return;
                 }
-                if (value.exists()){
+                if (value.exists()) {
                     String name = value.getString("name");
                     String status = value.getString("status");
                     following = value.contains("following") ? (List<String>) value.get("following") : new ArrayList<>();
@@ -457,26 +464,16 @@ public class Profile extends Fragment{
                     follwersCountTV.setText(String.valueOf(followers.size()));
                     collectionsCountBtn.setText(String.valueOf(collectionCount) + " Collections");
 
-                    Glide.with(context.getApplicationContext())
+                    int width = 200; // Đặt kích thước mong muốn
+                    int height = 200; // Đặt kích thước mong muốn
+
+                    Glide.with(context)
                             .load(profileURL)
                             .placeholder(R.drawable.profile)
-                            .circleCrop()
-//                            .listener(new RequestListener<Drawable>() {
-//                                @Override
-//                                public boolean onLoadFailed(@Nullable GlideException e, @Nullable Object model, @NonNull Target<Drawable> target, boolean isFirstResource) {
-//                                    return false;
-//                                }
-//
-//                                @Override
-//                                public boolean onResourceReady(@NonNull Drawable resource, @NonNull Object model, Target<Drawable> target, @NonNull DataSource dataSource, boolean isFirstResource) {
-//                                    Bitmap bitmap = ((BitmapDrawable) resource).getBitmap();
-//                                    storeProfileImage(bitmap, profileURL);
-//                                    return false;
-//                                }
-//                            })
+                            .fitCenter() // Hoặc .centerCrop()
+                            .override(width, height)
                             .timeout(6500)
                             .into(profileImage);
-
 
                     UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                             .setDisplayName(name)
@@ -493,7 +490,7 @@ public class Profile extends Fragment{
         myRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                if (error != null){
+                if (error != null) {
                     Log.e("Load my ref error", error.getMessage());
                     return;
                 }
@@ -502,43 +499,48 @@ public class Profile extends Fragment{
                 myfollowing = value.contains("following") ? (List<String>) value.get("following") : new ArrayList<>();
                 myfollowers = value.contains("followers") ? (List<String>) value.get("followers") : new ArrayList<>();
 
-                if (myfollowing.contains(uid)){
+                if (myfollowing.contains(uid)) {
                     followBtn.setText("Unfollow");
                     isFollowed = true;
-                }else{
+                } else {
                     isFollowed = false;
                 }
 
                 Log.d("TEST !!!", "myfollwing size " + myfollowing.size());
                 Log.d("TEST !!!", "myfollwers size " + myfollowers.size());
-
-
             }
         });
 
         FirebaseFirestore.getInstance().collection("Relationships").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                for (QueryDocumentSnapshot snapshot : value){
+                if (error != null) {
+                    Log.e("Load relationships error", error.getMessage());
+                    return;
+                }
+                if (value == null) return;
+
+                for (QueryDocumentSnapshot snapshot : value) {
                     String uid1 = snapshot.getString("uid1");
                     String uid2 = snapshot.getString("uid2");
                     String status = snapshot.getString("status");
-                    if (uid1.equals(user.getUid()) && uid2.equals(uid) && !status.equals("denied")){
-                        if (status.equals("waiting acceptance"))
+                    if (uid1.equals(currentUID) && uid2.equals(uid) && !status.equals("denied")) {
+                        if (status.equals("waiting acceptance")) {
                             addfrBtn.setText("Undo sending");
-                        else if (status.equals("accepted") || status.equals("friend"))
+                        } else if (status.equals("accepted") || status.equals("friend")) {
                             addfrBtn.setText("Unfriend");
+                        }
                         addfrBtn.setVisibility(View.VISIBLE);
                         acceptBtn.setVisibility(GONE);
                         denyBtn.setVisibility(GONE);
                         relationshipid = snapshot.getString("id");
                         break;
-                    } else if (uid1.equals(uid) && uid2.equals(user.getUid()) && !status.equals("denied")){
-                        if (status.equals("waiting acceptance")){
+                    } else if (uid1.equals(uid) && uid2.equals(currentUID) && !status.equals("denied")) {
+                        if (status.equals("waiting acceptance")) {
                             addfrBtn.setVisibility(View.GONE);
                             acceptBtn.setVisibility(View.VISIBLE);
                             denyBtn.setVisibility(View.VISIBLE);
-                        } else if (status.equals("accepted") || status.equals("friend")){
+                        } else if (status.equals("accepted") || status.equals("friend")) {
                             addfrBtn.setText("Unfriend");
                             addfrBtn.setVisibility(View.VISIBLE);
                             acceptBtn.setVisibility(GONE);
@@ -555,6 +557,7 @@ public class Profile extends Fragment{
 
         loadListFriendData(view);
     }
+
 
     public void loadPostData(View view){
 
@@ -1023,6 +1026,7 @@ public class Profile extends Fragment{
                             if (task.isSuccessful()){
                                 Toast.makeText(getContext(), "An invitation has been sent", Toast.LENGTH_SHORT).show();
                                 addToHisNotifications(uid, "You have a new friend request from " + name1, user.getUid());
+                                Log.d("Profile", "Friend request sent to " + uid);
 
                             } else {
                                 Toast.makeText(getContext(), "Failed to send an add friend invitation", Toast.LENGTH_SHORT).show();
@@ -1080,6 +1084,8 @@ public class Profile extends Fragment{
         addfrBtn.setText("Unfriend");
         addToHisNotifications(uid, "Your friend request has been accepted by " + user.getDisplayName(), user.getUid());
 
+        // Cập nhật lại giao diện
+        loadBasicData(getView());
     }
 
     private void unFriendAction(){

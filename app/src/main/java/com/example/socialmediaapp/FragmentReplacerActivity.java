@@ -1,6 +1,7 @@
 package com.example.socialmediaapp;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
@@ -17,10 +18,13 @@ import com.example.socialmediaapp.fragments.Comment;
 import com.example.socialmediaapp.fragments.Profile;
 import com.example.socialmediaapp.fragments.SignIn;
 import com.example.socialmediaapp.fragments.SignUp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
-public class FragmentReplacerActivity extends AppCompatActivity {
+public class FragmentReplacerActivity extends AppCompatActivity implements Profile.OnDataPassFriend {
 
     private FrameLayout frameLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,16 +38,14 @@ public class FragmentReplacerActivity extends AppCompatActivity {
 
         frameLayout = findViewById(R.id.TframeLayout);
 
-//        String FragmentType = "Init";
-//        if (getIntent().getStringExtra("FragmentType") != null)
-//            FragmentType = getIntent().getStringExtra("FragmentType");
-//        if (FragmentType.equals("Comment")) {
-//            setFragment(new Comment());
-//        } else if (FragmentType.equals("Collection")){
-//            setFragment(new Collection());
-//        } else {
-//            setFragment(new SignIn());
-//        }
+        // Kiểm tra trạng thái đăng nhập của người dùng
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            Toast.makeText(this, "User is not logged in", Toast.LENGTH_SHORT).show();
+            setFragment(new SignIn());
+            return;
+        }
+
         String FragmentType = getIntent().getStringExtra("FragmentType");
         if (FragmentType != null) {
             switch (FragmentType) {
@@ -51,7 +53,13 @@ public class FragmentReplacerActivity extends AppCompatActivity {
                     setFragment(new Comment());
                     break;
                 case "Profile":
-                    setFragment(new Profile());
+                    String profileUID = getIntent().getStringExtra("profileUID");
+                    Profile profileFragment = new Profile();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("uid", profileUID);
+                    bundle.putString("currentUID", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                    profileFragment.setArguments(bundle);
+                    setFragment(profileFragment);
                     break;
                 case "Collection":
                     setFragment(new Collection());
@@ -64,17 +72,20 @@ public class FragmentReplacerActivity extends AppCompatActivity {
             setFragment(new SignIn());
         }
     }
-    public void setFragment(Fragment fragment){
+
+    public void setFragment(Fragment fragment) {
         FragmentTransaction fragTrans = getSupportFragmentManager().beginTransaction();
         fragTrans.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
 
-        if (fragment instanceof SignUp){
+        if (fragment instanceof SignUp) {
             fragTrans.addToBackStack(null);
         }
-        if (fragment instanceof Comment){
+        if (fragment instanceof Comment) {
             String id = getIntent().getStringExtra("id");
             String uid = getIntent().getStringExtra("uid");
             String currentUID = getIntent().getStringExtra("currentUID");
+
+            Log.d("FragmentReplacerActivity", "ID: " + id + ", UID: " + uid + ", currentUID: " + currentUID);
 
             Bundle bundle = new Bundle();
             bundle.putString("id", id);
@@ -84,12 +95,14 @@ public class FragmentReplacerActivity extends AppCompatActivity {
         }
         if (fragment instanceof Profile) {
             String uid = getIntent().getStringExtra("uid");
+            String currentUID = getIntent().getStringExtra("currentUID");
 
             Bundle bundle = new Bundle();
             bundle.putString("uid", uid);
+            bundle.putString("currentUID", currentUID);
             fragment.setArguments(bundle);
         }
-        if (fragment instanceof Collection){
+        if (fragment instanceof Collection) {
             String collectionID = getIntent().getStringExtra("collectionID");
             String collectionName = getIntent().getStringExtra("collectionName");
             String collectionUID = getIntent().getStringExtra("collectionUID");
@@ -101,7 +114,13 @@ public class FragmentReplacerActivity extends AppCompatActivity {
             fragment.setArguments(bundle);
         }
 
-        fragTrans.replace(frameLayout.getId(),fragment);
+        fragTrans.replace(frameLayout.getId(), fragment);
         fragTrans.commit();
+    }
+
+    @Override
+    public void onChange(String uID) {
+        // Triển khai phương thức onChange, bạn có thể để trống hoặc thêm logic nếu cần
+        Log.d("FragmentReplacerActivity", "onChange called with uID: " + uID);
     }
 }
