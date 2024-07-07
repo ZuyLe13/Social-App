@@ -2,6 +2,7 @@ package com.example.socialmediaapp.fragments;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -44,6 +45,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.example.socialmediaapp.fragments.SignIn;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -319,6 +321,12 @@ public class SignIn extends Fragment {
                         }
                     }
                 });
+
+        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                .setDisplayName(acc.getDisplayName())
+                .setPhotoUri(Uri.parse("https://toppng.com/uploads/preview/person-vector-11551054765wbvzeoxz2c.png"))
+                .build();
+        user.updateProfile(profileUpdates);
 
     }
 //    @Override
